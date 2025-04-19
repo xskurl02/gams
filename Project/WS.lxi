@@ -1,0 +1,20 @@
+B 3 C o m p i l a t i o n
+B 54 E x e c u t i o n
+I 56 "Test:..."
+I 57 as
+B 78 Equation Listing    SOLVE vyroba Using LP From line 28
+D 81 ucelfce
+D 86 omez
+B 98 Column Listing      SOLVE vyroba Using LP From line 28
+E 101 z
+E 108 x
+B 136 Range Statistics    SOLVE vyroba Using LP From line 28
+B 147 Model Statistics    SOLVE vyroba Using LP From line 28
+B 160 Solution Report     SOLVE vyroba Using LP From line 28
+F 193 ucelfce
+F 195 omez
+G 206 z
+G 208 x
+B 222 E x e c u t i o n
+I 224 z
+I 225 x

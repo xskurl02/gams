@@ -1,0 +1,248 @@
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/19/25 08:21:58 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+   2  set j indexy promenych /1,2,3/;
+   3  set i indexy obmedzeni /1,2,3,4/;
+   4  set s pocet scenaru /1,2/;  # TODO: Zatial nepouzitelne
+   5  parameter c(j) /1 90,2 150,3 155/; #Hodnota jednotkovych zisku 1 sivy riadok
+   6  parameter b(i) /1 9600,2 9600,3 10400,4 5400/; #Hodnota jednotlivych obmedzeni, purpurova hodnota
+   7  parameter p(s) /1 0.5, 2 0.5/; #Pravdepodobnost nastatnia nejakeho pripadu
+   8  parameter cs(j,s);
+   9  parameter as(i,j,s);
+  10  Parameter bs(i,s);
+  11  scalar EzWS, varzWS, szWS;
+  12  parameter zWSmax(s), xWSmax(j,s);
+  13  table a(i,j) #Dalsie riadky obmedzenia (pocet riadkov x pocet stlpcov)
+  14      1 2  3
+  15  1  35 35 35
+  16  2  14 13 15
+  17  3  38 35 34
+  18  4  25 20 20;
+  19  as(i,j,s) = uniform(0.8,2.0);
+  20  display "Test:";
+  21  display as;
+  22  Variable z;
+  23  Positive Variable x(j);
+  24  Equation ucelfce, omez(i);
+  25  ucelfce.. z =e= sum(j, c(j) * x(j));
+  26  omez(i).. sum(j, a(i,j)* x(j)) =l= b(i);
+  27  Model vyroba /ucelfce, omez/;
+  28  Solve vyroba maximizing z using LP;
+  29  display z.L, x.L;
+  30  File out /"Vysledky.txt"/;
+  31  put out;
+  32  put "Vysledky a vstupy:"/;#/ newline -> what the fuck is this language
+  33  put "------------------"/;
+  34  put "S ","p(s) ","opt? ","num? ", "z_max "/;
+  35  loop (j, put "x(",j.TL:1,") ";); #
+  36  loop (j, put "c(",j.TL:1,") ";);
+  37  loop (i, put "b(",i.TL:1,") ";);
+  38  loop (i, put "a(",i.TL:1,") ";);
+  39  loop (i, loop(j, put "a(", i.TL:1, ",", j.TL:1,")";););
+  40  put /;
+
+**** LIST OF STRAY NAMES - CHECK DECLARATIONS FOR SPURIOUS COMMAS
+**** STRAY NAME varzWS OF TYPE PARAM
+**** STRAY NAME szWS OF TYPE PARAM
+
+
+COMPILATION TIME     =        0.000 SECONDS      3 MB  49.4.0 6fb2fe8b WEX-WEI
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/19/25 08:21:58 Page 2
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+E x e c u t i o n
+
+
+----     20 Test:
+
+----     21 PARAMETER as  
+
+              1           2
+
+1.1       1.006       1.812
+1.2       1.460       1.161
+1.3       1.151       1.069
+2.1       1.220       1.828
+2.2       0.881       1.400
+2.3       1.998       1.494
+3.1       1.989       1.715
+3.2       0.957       1.568
+3.3       0.991       1.100
+4.1       1.603       1.322
+4.2       1.232       1.222
+4.3       0.958       0.980
+
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/19/25 08:21:58 Page 3
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Equation Listing    SOLVE vyroba Using LP From line 28
+
+
+---- ucelfce  =E=  
+
+ucelfce..  z - 90*x(1) - 150*x(2) - 155*x(3) =E= 0 ; (LHS = 0)
+     
+
+---- omez  =L=  
+
+omez(1)..  35*x(1) + 35*x(2) + 35*x(3) =L= 9600 ; (LHS = 0)
+     
+omez(2)..  14*x(1) + 13*x(2) + 15*x(3) =L= 9600 ; (LHS = 0)
+     
+omez(3)..  38*x(1) + 35*x(2) + 34*x(3) =L= 10400 ; (LHS = 0)
+     
+REMAINING ENTRY SKIPPED
+
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/19/25 08:21:58 Page 4
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Column Listing      SOLVE vyroba Using LP From line 28
+
+
+---- z  
+
+z
+                (.LO, .L, .UP, .M = -INF, 0, +INF, 0)
+        1       ucelfce
+
+
+---- x  
+
+x(1)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+      -90       ucelfce
+       35       omez(1)
+       14       omez(2)
+       38       omez(3)
+       25       omez(4)
+
+x(2)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+     -150       ucelfce
+       35       omez(1)
+       13       omez(2)
+       35       omez(3)
+       20       omez(4)
+
+x(3)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+     -155       ucelfce
+       35       omez(1)
+       15       omez(2)
+       34       omez(3)
+       20       omez(4)
+
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/19/25 08:21:58 Page 5
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Range Statistics    SOLVE vyroba Using LP From line 28
+
+
+RANGE STATISTICS (ABSOLUTE NON-ZERO FINITE VALUES)
+
+RHS       [min, max] : [ 5.400E+03, 1.040E+04] - Zero values observed as well
+Bound     [min, max] : [        NA,        NA] - Zero values observed as well
+Matrix    [min, max] : [ 1.000E+00, 1.550E+02]
+
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/19/25 08:21:58 Page 6
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Model Statistics    SOLVE vyroba Using LP From line 28
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           2     SINGLE EQUATIONS            5
+BLOCKS OF VARIABLES           2     SINGLE VARIABLES            4
+NON ZERO ELEMENTS            16
+
+
+GENERATION TIME      =        0.000 SECONDS      4 MB  49.4.0 6fb2fe8b WEX-WEI
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/19/25 08:21:58 Page 7
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Solution Report     SOLVE vyroba Using LP From line 28
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   vyroba              OBJECTIVE  z
+     TYPE    LP                  DIRECTION  MAXIMIZE
+     SOLVER  CPLEX               FROM LINE  28
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      1 Optimal
+**** OBJECTIVE VALUE            41850.0000
+
+ RESOURCE USAGE, LIMIT          0.000 10000000000.000
+ ITERATION COUNT, LIMIT         3    2147483647
+*** This solver runs with a community license. No commercial use.
+--- GMO setup time: 0.00s
+--- GMO memory 0.50 Mb (peak 0.50 Mb)
+--- Dictionary memory 0.00 Mb
+--- Cplex 22.1.2.0 link memory 0.00 Mb (peak 0.00 Mb)
+--- Starting Cplex
+
+
+--- LP status (1): optimal.
+--- Cplex Time: 0.00sec (det. 0.01 ticks)
+
+
+Optimal solution found
+Objective:        41850.000000
+
+
+                           LOWER          LEVEL          UPPER         MARGINAL
+
+---- EQU ucelfce             .              .              .             1.0000      
+
+---- EQU omez  
+
+         LOWER          LEVEL          UPPER         MARGINAL
+
+1        -INF         9450.0000      9600.0000          .          
+2        -INF         4050.0000      9600.0000          .          
+3        -INF         9180.0000     10400.0000          .          
+4        -INF         5400.0000      5400.0000         7.7500      
+
+                           LOWER          LEVEL          UPPER         MARGINAL
+
+---- VAR z                 -INF        41850.0000        +INF             .          
+
+---- VAR x  
+
+         LOWER          LEVEL          UPPER         MARGINAL
+
+1          .              .            +INF         -103.7500      
+2          .              .            +INF           -5.0000      
+3          .           270.0000        +INF             .          
+
+
+**** REPORT SUMMARY :        0     NONOPT
+                             0 INFEASIBLE
+                             0  UNBOUNDED
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/19/25 08:21:58 Page 8
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+E x e c u t i o n
+
+
+----     29 VARIABLE z.L                   =    41850.000  
+
+----     29 VARIABLE x.L  
+
+3 270.000
+
+
+**** REPORT FILE SUMMARY
+
+out D:\gams\Project\Vysledky.txt
+
+
+EXECUTION TIME       =        0.047 SECONDS      4 MB  49.4.0 6fb2fe8b WEX-WEI
+
+
+USER: Academic User                                  G250418+0003Ac-GEN
+      xskurl02@vutbr.cz                                       CLA109379
+      License for teaching and research at degree granting institutions
+
+
+**** FILE SUMMARY
+
+Input      D:\gams\Project\WS.gms
+Output     D:\gams\Project\WS.lst
