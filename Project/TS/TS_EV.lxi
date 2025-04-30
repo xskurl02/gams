@@ -1,105 +1,105 @@
 B 3 C o m p i l a t i o n
-B 161 Equation Listing    SOLVE vyroba Using LP From line 54
-D 164 ucelfce
-D 169 omez0
-D 180 omez1
-D 191 omez2
-D 200 omez3
-B 210 Column Listing      SOLVE vyroba Using LP From line 54
-E 213 z
-E 220 x
-E 265 yp
-E 281 ym
-B 301 Range Statistics    SOLVE vyroba Using LP From line 54
-B 312 Model Statistics    SOLVE vyroba Using LP From line 54
-B 325 Solution Report     SOLVE vyroba Using LP From line 54
-F 358 ucelfce
-F 360 omez0
-F 369 omez1
-F 378 omez2
-F 386 omez3
-G 396 z
-G 398 x
-G 406 yp
-G 415 ym
-B 430 E x e c u t i o n
-I 432 z
-I 433 x
-B 441 Equation Listing    SOLVE vyroba Using LP From line 110
-D 444 ucelfce
-D 449 omez0
-D 460 omez1
-D 471 omez2
-D 480 omez3
-B 490 Column Listing      SOLVE vyroba Using LP From line 110
-E 493 z
-E 500 x
-E 545 yp
-E 561 ym
-B 581 Range Statistics    SOLVE vyroba Using LP From line 110
-B 592 Model Statistics    SOLVE vyroba Using LP From line 110
-B 610 Solution Report     SOLVE vyroba Using LP From line 110
-F 643 ucelfce
-F 645 omez0
-F 654 omez1
-F 663 omez2
-F 671 omez3
-G 681 z
-G 683 x
-G 691 yp
-G 700 ym
-B 715 E x e c u t i o n
-I 717 z
-I 718 x
-B 726 Equation Listing    SOLVE vyroba Using LP From line 110
-D 729 ucelfce
-D 734 omez0
-D 745 omez1
-D 756 omez2
-D 765 omez3
-B 775 Column Listing      SOLVE vyroba Using LP From line 110
-E 778 z
-E 785 x
-E 830 yp
-E 846 ym
-B 866 Range Statistics    SOLVE vyroba Using LP From line 110
-B 877 Model Statistics    SOLVE vyroba Using LP From line 110
-B 895 Solution Report     SOLVE vyroba Using LP From line 110
-F 928 ucelfce
-F 930 omez0
-F 939 omez1
-F 948 omez2
-F 956 omez3
-G 966 z
-G 968 x
-G 976 yp
-G 985 ym
-B 1000 E x e c u t i o n
-I 1002 z
-I 1003 x
-B 1011 Equation Listing    SOLVE vyroba Using LP From line 110
-D 1014 ucelfce
-D 1019 omez0
-D 1030 omez1
-D 1041 omez2
-D 1050 omez3
-B 1060 Column Listing      SOLVE vyroba Using LP From line 110
-E 1063 z
-E 1070 x
-E 1115 yp
-E 1131 ym
-B 1151 Range Statistics    SOLVE vyroba Using LP From line 110
-B 1162 Model Statistics    SOLVE vyroba Using LP From line 110
-B 1180 Solution Report     SOLVE vyroba Using LP From line 110
-F 1213 ucelfce
-F 1215 omez0
-F 1224 omez1
-F 1233 omez2
-F 1241 omez3
-G 1251 z
-G 1253 x
-G 1261 yp
-G 1270 ym
-B 1285 E x e c u t i o n
-I 1287 z
-I 1288 x
+B 196 Equation Listing    SOLVE vyroba Using LP From line 77
+D 199 ucelfce
+D 204 omez0
+D 215 omez1
+D 226 omez2
+D 235 omez3
+B 245 Column Listing      SOLVE vyroba Using LP From line 77
+E 248 z
+E 255 x
+E 300 yp
+E 316 ym
+B 336 Range Statistics    SOLVE vyroba Using LP From line 77
+B 347 Model Statistics    SOLVE vyroba Using LP From line 77
+B 360 Solution Report     SOLVE vyroba Using LP From line 77
+F 393 ucelfce
+F 395 omez0
+F 404 omez1
+F 413 omez2
+F 421 omez3
+G 431 z
+G 433 x
+G 441 yp
+G 450 ym
+B 465 E x e c u t i o n
+I 467 z
+I 468 x
+B 476 Equation Listing    SOLVE vyroba Using LP From line 133
+D 479 ucelfce
+D 484 omez0
+D 495 omez1
+D 506 omez2
+D 515 omez3
+B 525 Column Listing      SOLVE vyroba Using LP From line 133
+E 528 z
+E 535 x
+E 580 yp
+E 596 ym
+B 616 Range Statistics    SOLVE vyroba Using LP From line 133
+B 627 Model Statistics    SOLVE vyroba Using LP From line 133
+B 645 Solution Report     SOLVE vyroba Using LP From line 133
+F 678 ucelfce
+F 680 omez0
+F 689 omez1
+F 698 omez2
+F 706 omez3
+G 716 z
+G 718 x
+G 726 yp
+G 735 ym
+B 750 E x e c u t i o n
+I 752 z
+I 753 x
+B 761 Equation Listing    SOLVE vyroba Using LP From line 133
+D 764 ucelfce
+D 769 omez0
+D 780 omez1
+D 791 omez2
+D 800 omez3
+B 810 Column Listing      SOLVE vyroba Using LP From line 133
+E 813 z
+E 820 x
+E 865 yp
+E 881 ym
+B 901 Range Statistics    SOLVE vyroba Using LP From line 133
+B 912 Model Statistics    SOLVE vyroba Using LP From line 133
+B 930 Solution Report     SOLVE vyroba Using LP From line 133
+F 963 ucelfce
+F 965 omez0
+F 974 omez1
+F 983 omez2
+F 991 omez3
+G 1001 z
+G 1003 x
+G 1011 yp
+G 1020 ym
+B 1035 E x e c u t i o n
+I 1037 z
+I 1038 x
+B 1046 Equation Listing    SOLVE vyroba Using LP From line 133
+D 1049 ucelfce
+D 1054 omez0
+D 1065 omez1
+D 1076 omez2
+D 1085 omez3
+B 1095 Column Listing      SOLVE vyroba Using LP From line 133
+E 1098 z
+E 1105 x
+E 1150 yp
+E 1166 ym
+B 1186 Range Statistics    SOLVE vyroba Using LP From line 133
+B 1197 Model Statistics    SOLVE vyroba Using LP From line 133
+B 1215 Solution Report     SOLVE vyroba Using LP From line 133
+F 1248 ucelfce
+F 1250 omez0
+F 1259 omez1
+F 1268 omez2
+F 1276 omez3
+G 1286 z
+G 1288 x
+G 1296 yp
+G 1305 ym
+B 1320 E x e c u t i o n
+I 1322 z
+I 1323 x

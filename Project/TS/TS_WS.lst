@@ -1,128 +1,133 @@
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:08:45 Page 1
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:15:16 Page 1
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
 C o m p i l a t i o n
 
 
-   3  set i /1 * 4/; #stlpce x
-   4  set j /1 * 3/; #riadky y
-   5  set s / 1 * 3/;
-   6  scalar EzWS, varzWS, szWS;
-   7  parameter
-   8      b_UP /1 4000,2 3000,3 4500,4 3000/, #Horna hranica suctu v riadku
-   9      b_DOWN /1 1000,2 1500,3 4000,4 800/, #Dolna hranica suctu v riadku
-  10      x_UP /1 100,2 100,3 100/, # Horna hranica x
-  11      x_DOWN /1 20,2 40,3 20/, # Dolna hranica x
-  12      qp(i) / 1 0, 2 0, 3 0 /,
-  13      qm(i) / 1 10,2 20, 3 30 /, #Naklady na zdroje navic -> TODO: Opytat sa teamu
-  14      qms(i,s) "naklad na zdroje navic"  /1.1 10, 2.1 20, 3.1 30,
-  15                                          1.2 20, 2.2 30, 3.2 10,
-  16                                          1.3 40, 2.3 20, 3.3 10/,
-  17      qps(i,s) "naklad na zdroje navic"  /1.1 0, 2.1 0, 3.1 0,
-  18                                          1.2 0, 2.2 0, 3.2 0,
-  19                                          1.3 0, 2.3 0, 3.3 0/,
-  20      c(j) /1 145, 2 150, 3 147/
-  21      p(s) /1 0.35,2 0.35,3 0.3/,
-  22      as(i,j,s)
-  23      /1.1.1 30, 1.2.1 28, 1.3.1 27,
-  24      2.1.1 22, 2.2.1 23, 2.3.1 21,
-  25      3.1.1 31, 3.2.1 34, 3.3.1 34,
-  26      4.1.1 24, 4.2.1 20, 4.3.1 24,
-  27      1.1.2 30, 1.2.2 27, 1.3.2 26,
-  28      2.1.2 22, 2.2.2 23, 2.3.2 21,
-  29      3.1.2 31, 3.2.2 35, 3.3.2 34,
-  30      4.1.2 23, 4.2.2 21, 4.3.2 22,
-  31      1.1.3 25, 1.2.3 30, 1.3.3 30,
-  32      2.1.3 25, 2.2.3 20, 2.3.3 22,
-  33      3.1.3 30, 3.2.3 35, 3.3.3 32,
-  34      4.1.3 18, 4.2.3 20,4.3.3 22/,
-  35      zWSmax(s),
-  36      xWSmax(j,s);
-  37  table a(i,j)
-  38      1   2   3
-  39  1   30  28  27
-  40  2   22  23  21
-  41  3   31  34  34
-  42  4   24  20  24;
-  43  Variable z;
-  44  Positive Variables x(j),yp(i),ym(i);
-  45  Equations ucelfce, omez0(i), omez1(i), omez2(j), omez3(j);
-  46  ucelfce..           z =E= sum(j, c(j) * x(j)) - sum(i, qm(i)*ym(i) + qp(i)*yp(i));
-  47  omez0(i)..          sum( j, a(i,j) * x(j) ) + yp(i) - ym(i) =E= b_UP(i);
-  48  omez1(i)..          sum( j, a(i,j) * x(j) ) =G= b_DOWN(i);
-  49  omez2(j)..          x(j) =L= x_UP(j);
-  50  omez3(j)..          x(j) =G= x_DOWN(j);
-  51  model vyroba / ucelfce, omez0, omez1, omez2, omez3 /;
-  52  yp.UP(i) = 100;
-  53  ym.UP(i) = 100;
-  54  solve vyroba maximizing z using LP;
-  55  display z.L, x.L;
-  56  file out / "vysledky.txt" /;
-  57  put out;
-  58  put "Vysledky a vstupy:" /;
-  59  put "==================" / /;
-  60  put "s":3, "p(s)":6, "opt?":7, "num?":7, "z_max":12;
-  61  loop(j, put "x(" , j.tl:0 , ")":10;);
-  62  loop(i, put "b_UP(" , i.tl:0 , ")":10;);
-  63  loop(i, put "b_DN(" , i.tl:0 , ")":10;);
-  64  loop(j, put "x_UP(" , j.tl:0 , ")":10;);
-  65  loop(j, put "x_DN(" , j.tl:0 , ")":10;);
-  66  loop(i, loop(j, put "a(" , i.tl:0 , "," , j.tl:0 , ")":10;););
-  67  loop(i,
-  68          put " qp(", i.TL:1, ")":11;
-  69      );
-  70  loop(i, put " qm(", i.TL:1, ")":11;);
-  71  put /;
-  72  loop(s,
-  73      a(i,j) = as(i,j,s);
-  74      qp(i) = qps(i,s);
-  75      qm(i) = qms(i,s);
-  76      solve vyroba maximizing z using LP;
-  77      display z.L, x.L;
-  78      zWSmax(s) = z.L;
-  79      If(vyroba.modelstat EQ 4, zWSmax(s) = -INF;);
-  80      xWSmax(j,s) = x.L(j);
-  81      put s.tl:3, p(s):5:3, vyroba.modelstat:3:0, vyroba.solvestat:7:0, z.L:11:2;
-  82      loop(j,
-  83          put x.L(j):11:2;
-  84          put "":1;
-  85          put$(ord(j)=1) "":1;
-  86          put$(ord(j)=2) "":1;
-  87      );
-  88      loop(i,
-  89          put b_UP(i):14:2;
-  90          put$(ord(i)=1) "":2;
-  91          put$(ord(i)=2) "":2;
-  92          put$(ord(i)=3) "":2;
-  93      );
-  94      loop(i, put b_DOWN(i):16:2;);
-  95      loop(j, put x_UP(j):16:2;);
-  96      loop(j, put x_DOWN(j):16:2;);
-  97      loop(i, loop(j, put a(i,j):15:2;););
-  98      loop(i,
-  99          put qp(i):15:2;
- 100          put$(ord(i)=1) "":1;
- 101          put$(ord(i)=2) "":1;
- 102          put$(ord(i)=3) "":1;
- 103      );
- 104      loop(i,put qm(i):16:2;);
- 105      put /;
- 106  );
- 107   
- 108  EzWS   = sum(s,p(s) * zWSmax(s) );
- 109  put "EzWS=", EzWS:12:2 /;
- 110  If((vyroba.modelstat EQ 1) OR (vyroba.modelstat EQ 2),
- 111      varzWS = sum(s,p(s) * zWSmax(s) * zWSmax(s) ) - EzWS * EzWS;);
- 112  If(vyroba.modelstat EQ 4,
- 113      varzWS = UNDF;);
- 114  put "varzWS=", varzWS:10:2 /;
- 115  szWS   = sqrt(varzWS);
- 116  put "stdzWS=", szWS:10:2 /;
+   3  #WS nejvačší zisk
+   4  #EEV slibné HOdne vysko
+   5   
+   6  #EOAS HORSIE WS asi lepšie ako EEV lepsie ako EEV
+   7  #Hod
+   8  set i /1 * 4/; #stlpce x
+   9  set j /1 * 3/; #riadky y
+  10  set s / 1 * 3/;
+  11  scalar EzWS, varzWS, szWS;
+  12  parameter
+  13      b_UP /1 4000,2 3000,3 4500,4 3000/, #Horna hranica suctu v riadku
+  14      b_DOWN /1 1000,2 1500,3 4000,4 800/, #Dolna hranica suctu v riadku
+  15      x_UP /1 100,2 100,3 100/, # Horna hranica x
+  16      x_DOWN /1 20,2 40,3 20/, # Dolna hranica x
+  17      qp(i) / 1 0, 2 0, 3 0 /,
+  18      qm(i) / 1 10,2 20, 3 30 /, #Naklady na zdroje navic -> TODO: Opytat sa teamu
+  19      qms(i,s) "naklad na zdroje navic"  /1.1 10, 2.1 20, 3.1 30,
+  20                                          1.2 20, 2.2 30, 3.2 10,
+  21                                          1.3 40, 2.3 20, 3.3 10/,
+  22      qps(i,s) "naklad na zdroje navic"  /1.1 0, 2.1 0, 3.1 0,
+  23                                          1.2 0, 2.2 0, 3.2 0,
+  24                                          1.3 0, 2.3 0, 3.3 0/,
+  25      c(j) /1 145, 2 150, 3 147/
+  26      p(s) /1 0.35,2 0.35,3 0.3/,
+  27      as(i,j,s)
+  28      /1.1.1 30, 1.2.1 28, 1.3.1 27,
+  29      2.1.1 22, 2.2.1 23, 2.3.1 21,
+  30      3.1.1 31, 3.2.1 34, 3.3.1 34,
+  31      4.1.1 24, 4.2.1 20, 4.3.1 24,
+  32      1.1.2 30, 1.2.2 27, 1.3.2 26,
+  33      2.1.2 22, 2.2.2 23, 2.3.2 21,
+  34      3.1.2 31, 3.2.2 35, 3.3.2 34,
+  35      4.1.2 23, 4.2.2 21, 4.3.2 22,
+  36      1.1.3 25, 1.2.3 30, 1.3.3 30,
+  37      2.1.3 25, 2.2.3 20, 2.3.3 22,
+  38      3.1.3 30, 3.2.3 35, 3.3.3 32,
+  39      4.1.3 18, 4.2.3 20,4.3.3 22/,
+  40      zWSmax(s),
+  41      xWSmax(j,s);
+  42  table a(i,j)
+  43      1   2   3
+  44  1   30  28  27
+  45  2   22  23  21
+  46  3   31  34  34
+  47  4   24  20  24;
+  48  Variable z;
+  49  Positive Variables x(j),yp(i),ym(i);
+  50  Equations ucelfce, omez0(i), omez1(i), omez2(j), omez3(j);
+  51  ucelfce..           z =E= sum(j, c(j) * x(j)) - sum(i, qm(i)*ym(i) + qp(i)*yp(i));
+  52  omez0(i)..          sum( j, a(i,j) * x(j) ) + yp(i) - ym(i) =E= b_UP(i);
+  53  omez1(i)..          sum( j, a(i,j) * x(j) ) =G= b_DOWN(i);
+  54  omez2(j)..          x(j) =L= x_UP(j);
+  55  omez3(j)..          x(j) =G= x_DOWN(j);
+  56  model vyroba / ucelfce, omez0, omez1, omez2, omez3 /;
+  57  yp.UP(i) = 100;
+  58  ym.UP(i) = 100;
+  59  solve vyroba maximizing z using LP;
+  60  display z.L, x.L;
+  61  file out / "vysledky.txt" /;
+  62  put out;
+  63  put "Vysledky a vstupy:" /;
+  64  put "==================" / /;
+  65  put "s":3, "p(s)":6, "opt?":7, "num?":7, "z_max":12;
+  66  loop(j, put "x(" , j.tl:0 , ")":10;);
+  67  loop(i, put "b_UP(" , i.tl:0 , ")":10;);
+  68  loop(i, put "b_DN(" , i.tl:0 , ")":11;);
+  69  loop(j, put "x_UP(" , j.tl:0 , ")":10;);
+  70  loop(j, put "x_DN(" , j.tl:0 , ")":10;);
+  71  loop(i, loop(j, put "a(" , i.tl:0 , "," , j.tl:0 , ")":10;););
+  72  loop(i,
+  73          put " qp(", i.TL:1, ")":11;
+  74      );
+  75  loop(i, put " qm(", i.TL:1, ")":11;);
+  76  put /;
+  77  loop(s,
+  78      a(i,j) = as(i,j,s);
+  79      qp(i) = qps(i,s);
+  80      qm(i) = qms(i,s);
+  81      solve vyroba maximizing z using LP;
+  82      display z.L, x.L;
+  83      zWSmax(s) = z.L;
+  84      If(vyroba.modelstat EQ 4, zWSmax(s) = -INF;);
+  85      xWSmax(j,s) = x.L(j);
+  86      put s.tl:3, p(s):5:3, vyroba.modelstat:3:0, vyroba.solvestat:7:0, z.L:11:2;
+  87      loop(j,
+  88          put x.L(j):11:2;
+  89          put "":1;
+  90          put$(ord(j)=1) "":1;
+  91          put$(ord(j)=2) "":1;
+  92      );
+  93      loop(i,
+  94          put b_UP(i):14:2;
+  95          put$(ord(i)=1) "":2;
+  96          put$(ord(i)=2) "":2;
+  97          put$(ord(i)=3) "":2;
+  98      );
+  99      loop(i, put b_DOWN(i):16:2;);
+ 100      loop(j, put x_UP(j):16:2;);
+ 101      loop(j, put x_DOWN(j):16:2;);
+ 102      loop(i, loop(j, put a(i,j):15:2;););
+ 103      loop(i,
+ 104          put qp(i):15:2;
+ 105          put$(ord(i)=1) "":1;
+ 106          put$(ord(i)=2) "":1;
+ 107          put$(ord(i)=3) "":1;
+ 108      );
+ 109      loop(i,put qm(i):16:2;);
+ 110      put /;
+ 111  );
+ 112   
+ 113  EzWS   = sum(s,p(s) * zWSmax(s) );
+ 114  put "EzWS=", EzWS:12:2 /;
+ 115  If((vyroba.modelstat EQ 1) OR (vyroba.modelstat EQ 2),
+ 116      varzWS = sum(s,p(s) * zWSmax(s) * zWSmax(s) ) - EzWS * EzWS;);
+ 117  If(vyroba.modelstat EQ 4,
+ 118      varzWS = UNDF;);
+ 119  put "varzWS=", varzWS:10:2 /;
+ 120  szWS   = sqrt(varzWS);
+ 121  put "stdzWS=", szWS:10:2 /;
 
 
-COMPILATION TIME     =        0.000 SECONDS      3 MB  49.1.0 5c4d4ed6 WEX-WEI
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:08:45 Page 2
+COMPILATION TIME     =        0.000 SECONDS      3 MB  49.4.0 6fb2fe8b WEX-WEI
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:15:16 Page 2
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Equation Listing    SOLVE vyroba Using LP From line 54
+Equation Listing    SOLVE vyroba Using LP From line 59
 
 
 ---- ucelfce  =E=  
@@ -169,9 +174,9 @@ omez3(2)..  x(2) =G= 40 ; (LHS = 0, INFES = 40 ****)
      
 omez3(3)..  x(3) =G= 20 ; (LHS = 0, INFES = 20 ****)
      
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:08:45 Page 3
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:15:16 Page 3
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Column Listing      SOLVE vyroba Using LP From line 54
+Column Listing      SOLVE vyroba Using LP From line 59
 
 
 ---- z  
@@ -260,9 +265,9 @@ ym(3)
        -1       omez0(3)
 
 REMAINING ENTRY SKIPPED
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:08:45 Page 4
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:15:16 Page 4
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Range Statistics    SOLVE vyroba Using LP From line 54
+Range Statistics    SOLVE vyroba Using LP From line 59
 
 
 RANGE STATISTICS (ABSOLUTE NON-ZERO FINITE VALUES)
@@ -271,9 +276,9 @@ RHS       [min, max] : [ 2.000E+01, 4.500E+03] - Zero values observed as well
 Bound     [min, max] : [ 1.000E+02, 1.000E+02] - Zero values observed as well
 Matrix    [min, max] : [ 1.000E+00, 1.500E+02]
 
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:08:45 Page 5
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:15:16 Page 5
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Model Statistics    SOLVE vyroba Using LP From line 54
+Model Statistics    SOLVE vyroba Using LP From line 59
 
 
 MODEL STATISTICS
@@ -283,17 +288,17 @@ BLOCKS OF VARIABLES           4     SINGLE VARIABLES           12
 NON ZERO ELEMENTS            45
 
 
-GENERATION TIME      =        0.000 SECONDS      4 MB  49.1.0 5c4d4ed6 WEX-WEI
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:08:45 Page 6
+GENERATION TIME      =        0.000 SECONDS      4 MB  49.4.0 6fb2fe8b WEX-WEI
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:15:16 Page 6
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Solution Report     SOLVE vyroba Using LP From line 54
+Solution Report     SOLVE vyroba Using LP From line 59
 
 
                S O L V E      S U M M A R Y
 
      MODEL   vyroba              OBJECTIVE  z
      TYPE    LP                  DIRECTION  MAXIMIZE
-     SOLVER  CPLEX               FROM LINE  54
+     SOLVER  CPLEX               FROM LINE  59
 
 **** SOLVER STATUS     1 Normal Completion
 **** MODEL STATUS      1 Optimal
@@ -301,7 +306,7 @@ Solution Report     SOLVE vyroba Using LP From line 54
 
  RESOURCE USAGE, LIMIT          0.000 10000000000.000
  ITERATION COUNT, LIMIT         4    2147483647
-*** This solver runs with a demo license. No commercial use.
+*** This solver runs with a community license. No commercial use.
 --- GMO setup time: 0.00s
 --- GMO memory 0.50 Mb (peak 0.50 Mb)
 --- Dictionary memory 0.00 Mb
@@ -389,20 +394,20 @@ Objective:        19987.500000
 **** REPORT SUMMARY :        0     NONOPT
                              0 INFEASIBLE
                              0  UNBOUNDED
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:08:45 Page 7
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:15:16 Page 7
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
 E x e c u t i o n
 
 
-----     55 VARIABLE z.L                   =    19987.500  
+----     60 VARIABLE z.L                   =    19987.500  
 
-----     55 VARIABLE x.L  
+----     60 VARIABLE x.L  
 
 1 62.500,    2 40.909,    3 32.576
 
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:08:45 Page 8
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:15:16 Page 8
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Equation Listing    SOLVE vyroba Using LP From line 76
+Equation Listing    SOLVE vyroba Using LP From line 81
 
 
 ---- ucelfce  =E=  
@@ -449,9 +454,9 @@ omez3(2)..  x(2) =G= 40 ; (LHS = 40.9090909090909)
      
 omez3(3)..  x(3) =G= 20 ; (LHS = 32.5757575757576)
      
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:08:45 Page 9
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:15:16 Page 9
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Column Listing      SOLVE vyroba Using LP From line 76
+Column Listing      SOLVE vyroba Using LP From line 81
 
 
 ---- z  
@@ -517,7 +522,7 @@ yp(2)
         1       omez0(2)
 
 yp(3)
-                (.LO, .L, .UP, .M = 0, 64.015151515152, 100, 0)
+                (.LO, .L, .UP, .M = 0, 64.0151515151522, 100, 0)
         1       omez0(3)
 
 REMAINING ENTRY SKIPPED
@@ -540,9 +545,9 @@ ym(3)
        -1       omez0(3)
 
 REMAINING ENTRY SKIPPED
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:08:45 Page 10
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:15:16 Page 10
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Range Statistics    SOLVE vyroba Using LP From line 76
+Range Statistics    SOLVE vyroba Using LP From line 81
 
 
 RANGE STATISTICS (ABSOLUTE NON-ZERO FINITE VALUES)
@@ -551,9 +556,9 @@ RHS       [min, max] : [ 2.000E+01, 4.500E+03] - Zero values observed as well
 Bound     [min, max] : [ 1.000E+02, 1.000E+02] - Zero values observed as well
 Matrix    [min, max] : [ 1.000E+00, 1.500E+02]
 
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:08:45 Page 11
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:15:16 Page 11
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Model Statistics    SOLVE vyroba Using LP From line 76
+Model Statistics    SOLVE vyroba Using LP From line 81
 
 
 LOOPS                                    s   1
@@ -566,19 +571,19 @@ BLOCKS OF VARIABLES           4     SINGLE VARIABLES           12
 NON ZERO ELEMENTS            45
 
 
-GENERATION TIME      =        0.000 SECONDS      4 MB  49.1.0 5c4d4ed6 WEX-WEI
+GENERATION TIME      =        0.000 SECONDS      4 MB  49.4.0 6fb2fe8b WEX-WEI
                L O O P S                  s 1
 
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:08:45 Page 12
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:15:16 Page 12
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Solution Report     SOLVE vyroba Using LP From line 76
+Solution Report     SOLVE vyroba Using LP From line 81
 
 
                S O L V E      S U M M A R Y
 
      MODEL   vyroba              OBJECTIVE  z
      TYPE    LP                  DIRECTION  MAXIMIZE
-     SOLVER  CPLEX               FROM LINE  76
+     SOLVER  CPLEX               FROM LINE  81
 
 **** SOLVER STATUS     1 Normal Completion
 **** MODEL STATUS      1 Optimal
@@ -586,7 +591,7 @@ Solution Report     SOLVE vyroba Using LP From line 76
 
  RESOURCE USAGE, LIMIT          0.000 10000000000.000
  ITERATION COUNT, LIMIT         0    2147483647
-*** This solver runs with a demo license. No commercial use.
+*** This solver runs with a community license. No commercial use.
 --- GMO setup time: 0.00s
 --- GMO memory 0.50 Mb (peak 0.50 Mb)
 --- Dictionary memory 0.00 Mb
@@ -674,20 +679,20 @@ Objective:        19987.500000
 **** REPORT SUMMARY :        0     NONOPT
                              0 INFEASIBLE
                              0  UNBOUNDED
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:08:45 Page 13
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:15:16 Page 13
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
 E x e c u t i o n
 
 
-----     77 VARIABLE z.L                   =    19987.500  
+----     82 VARIABLE z.L                   =    19987.500  
 
-----     77 VARIABLE x.L  
+----     82 VARIABLE x.L  
 
 1 62.500,    2 40.909,    3 32.576
 
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:08:45 Page 14
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:15:16 Page 14
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Equation Listing    SOLVE vyroba Using LP From line 76
+Equation Listing    SOLVE vyroba Using LP From line 81
 
 
 ---- ucelfce  =E=  
@@ -697,7 +702,7 @@ ucelfce..  z - 145*x(1) - 150*x(2) - 147*x(3) + 20*ym(1) + 30*ym(2) + 10*ym(3) =
 
 ---- omez0  =E=  
 
-omez0(1)..  30*x(1) + 27*x(2) + 26*x(3) + yp(1) - ym(1) =E= 4000 ; (LHS = 3926.51515151515, INFES = 73.4848484848485 ****)
+omez0(1)..  30*x(1) + 27*x(2) + 26*x(3) + yp(1) - ym(1) =E= 4000 ; (LHS = 3926.51515151515, INFES = 73.484848484849 ****)
      
 omez0(2)..  22*x(1) + 23*x(2) + 21*x(3) + yp(2) - ym(2) =E= 3000 ; (LHS = 3000)
      
@@ -734,9 +739,9 @@ omez3(2)..  x(2) =G= 40 ; (LHS = 40.9090909090909)
      
 omez3(3)..  x(3) =G= 20 ; (LHS = 32.5757575757576)
      
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:08:45 Page 15
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:15:16 Page 15
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Column Listing      SOLVE vyroba Using LP From line 76
+Column Listing      SOLVE vyroba Using LP From line 81
 
 
 ---- z  
@@ -802,7 +807,7 @@ yp(2)
         1       omez0(2)
 
 yp(3)
-                (.LO, .L, .UP, .M = 0, 64.015151515152, 100, 0)
+                (.LO, .L, .UP, .M = 0, 64.0151515151522, 100, 0)
         1       omez0(3)
 
 REMAINING ENTRY SKIPPED
@@ -825,9 +830,9 @@ ym(3)
        -1       omez0(3)
 
 REMAINING ENTRY SKIPPED
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:08:45 Page 16
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:15:16 Page 16
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Range Statistics    SOLVE vyroba Using LP From line 76
+Range Statistics    SOLVE vyroba Using LP From line 81
 
 
 RANGE STATISTICS (ABSOLUTE NON-ZERO FINITE VALUES)
@@ -836,9 +841,9 @@ RHS       [min, max] : [ 2.000E+01, 4.500E+03] - Zero values observed as well
 Bound     [min, max] : [ 1.000E+02, 1.000E+02] - Zero values observed as well
 Matrix    [min, max] : [ 1.000E+00, 1.500E+02]
 
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:08:45 Page 17
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:15:16 Page 17
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Model Statistics    SOLVE vyroba Using LP From line 76
+Model Statistics    SOLVE vyroba Using LP From line 81
 
 
 LOOPS                                    s   2
@@ -851,19 +856,19 @@ BLOCKS OF VARIABLES           4     SINGLE VARIABLES           12
 NON ZERO ELEMENTS            45
 
 
-GENERATION TIME      =        0.000 SECONDS      4 MB  49.1.0 5c4d4ed6 WEX-WEI
+GENERATION TIME      =        0.000 SECONDS      4 MB  49.4.0 6fb2fe8b WEX-WEI
                L O O P S                  s 2
 
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:08:45 Page 18
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:15:16 Page 18
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Solution Report     SOLVE vyroba Using LP From line 76
+Solution Report     SOLVE vyroba Using LP From line 81
 
 
                S O L V E      S U M M A R Y
 
      MODEL   vyroba              OBJECTIVE  z
      TYPE    LP                  DIRECTION  MAXIMIZE
-     SOLVER  CPLEX               FROM LINE  76
+     SOLVER  CPLEX               FROM LINE  81
 
 **** SOLVER STATUS     1 Normal Completion
 **** MODEL STATUS      1 Optimal
@@ -871,7 +876,7 @@ Solution Report     SOLVE vyroba Using LP From line 76
 
  RESOURCE USAGE, LIMIT          0.000 10000000000.000
  ITERATION COUNT, LIMIT         8    2147483647
-*** This solver runs with a demo license. No commercial use.
+*** This solver runs with a community license. No commercial use.
 --- GMO setup time: 0.00s
 --- GMO memory 0.50 Mb (peak 0.50 Mb)
 --- Dictionary memory 0.00 Mb
@@ -959,20 +964,20 @@ Objective:        19256.666667
 **** REPORT SUMMARY :        0     NONOPT
                              0 INFEASIBLE
                              0  UNBOUNDED
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:08:45 Page 19
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:15:16 Page 19
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
 E x e c u t i o n
 
 
-----     77 VARIABLE z.L                   =    19256.667  
+----     82 VARIABLE z.L                   =    19256.667  
 
-----     77 VARIABLE x.L  
+----     82 VARIABLE x.L  
 
 1 76.667,    2 40.000,    3 20.000
 
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:08:45 Page 20
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:15:16 Page 20
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Equation Listing    SOLVE vyroba Using LP From line 76
+Equation Listing    SOLVE vyroba Using LP From line 81
 
 
 ---- ucelfce  =E=  
@@ -1019,9 +1024,9 @@ omez3(2)..  x(2) =G= 40 ; (LHS = 40)
      
 omez3(3)..  x(3) =G= 20 ; (LHS = 20)
      
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:08:45 Page 21
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:15:16 Page 21
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Column Listing      SOLVE vyroba Using LP From line 76
+Column Listing      SOLVE vyroba Using LP From line 81
 
 
 ---- z  
@@ -1110,9 +1115,9 @@ ym(3)
        -1       omez0(3)
 
 REMAINING ENTRY SKIPPED
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:08:45 Page 22
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:15:16 Page 22
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Range Statistics    SOLVE vyroba Using LP From line 76
+Range Statistics    SOLVE vyroba Using LP From line 81
 
 
 RANGE STATISTICS (ABSOLUTE NON-ZERO FINITE VALUES)
@@ -1121,9 +1126,9 @@ RHS       [min, max] : [ 2.000E+01, 4.500E+03] - Zero values observed as well
 Bound     [min, max] : [ 1.000E+02, 1.000E+02] - Zero values observed as well
 Matrix    [min, max] : [ 1.000E+00, 1.500E+02]
 
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:08:45 Page 23
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:15:16 Page 23
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Model Statistics    SOLVE vyroba Using LP From line 76
+Model Statistics    SOLVE vyroba Using LP From line 81
 
 
 LOOPS                                    s   3
@@ -1136,27 +1141,27 @@ BLOCKS OF VARIABLES           4     SINGLE VARIABLES           12
 NON ZERO ELEMENTS            45
 
 
-GENERATION TIME      =        0.000 SECONDS      4 MB  49.1.0 5c4d4ed6 WEX-WEI
+GENERATION TIME      =        0.000 SECONDS      4 MB  49.4.0 6fb2fe8b WEX-WEI
                L O O P S                  s 3
 
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:08:45 Page 24
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:15:16 Page 24
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Solution Report     SOLVE vyroba Using LP From line 76
+Solution Report     SOLVE vyroba Using LP From line 81
 
 
                S O L V E      S U M M A R Y
 
      MODEL   vyroba              OBJECTIVE  z
      TYPE    LP                  DIRECTION  MAXIMIZE
-     SOLVER  CPLEX               FROM LINE  76
+     SOLVER  CPLEX               FROM LINE  81
 
 **** SOLVER STATUS     1 Normal Completion
 **** MODEL STATUS      1 Optimal
 **** OBJECTIVE VALUE            16508.1818
 
- RESOURCE USAGE, LIMIT          0.016 10000000000.000
+ RESOURCE USAGE, LIMIT          0.000 10000000000.000
  ITERATION COUNT, LIMIT         7    2147483647
-*** This solver runs with a demo license. No commercial use.
+*** This solver runs with a community license. No commercial use.
 --- GMO setup time: 0.00s
 --- GMO memory 0.50 Mb (peak 0.50 Mb)
 --- Dictionary memory 0.00 Mb
@@ -1165,7 +1170,7 @@ Solution Report     SOLVE vyroba Using LP From line 76
 
 
 --- LP status (1): optimal.
---- Cplex Time: 0.02sec (det. 0.04 ticks)
+--- Cplex Time: 0.00sec (det. 0.04 ticks)
 
 
 Optimal solution found
@@ -1244,31 +1249,32 @@ Objective:        16508.181818
 **** REPORT SUMMARY :        0     NONOPT
                              0 INFEASIBLE
                              0  UNBOUNDED
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:08:45 Page 25
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:15:16 Page 25
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
 E x e c u t i o n
 
 
-----     77 VARIABLE z.L                   =    16508.182  
+----     82 VARIABLE z.L                   =    16508.182  
 
-----     77 VARIABLE x.L  
+----     82 VARIABLE x.L  
 
 1 20.000,    2 40.000,    3 79.091
 
 
 **** REPORT FILE SUMMARY
 
-out C:\projekt\TS\vysledky.txt
+out D:\gams\Project\TS\vysledky.txt
 
 
-EXECUTION TIME       =        0.157 SECONDS      4 MB  49.1.0 5c4d4ed6 WEX-WEI
+EXECUTION TIME       =        0.172 SECONDS      4 MB  49.4.0 6fb2fe8b WEX-WEI
 
 
-USER: GAMS Demo, for EULA and demo limitations see   G250131/0001CB-GEN
-      https://www.gams.com/latest/docs/UG%5FLicense.html         DC0000
+USER: Academic User                                  G250418+0003Ac-GEN
+      xskurl02@vutbr.cz                                       CLA109379
+      License for teaching and research at degree granting institutions
 
 
 **** FILE SUMMARY
 
-Input      C:\projekt\TS\TS_WS.gms
-Output     C:\projekt\TS\TS_WS.lst
+Input      D:\gams\Project\TS\TS_WS.gms
+Output     D:\gams\Project\TS\TS_WS.lst

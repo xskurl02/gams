@@ -1,4 +1,4 @@
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:11:02 Page 1
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:37:07 Page 1
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
 C o m p i l a t i o n
 
@@ -43,19 +43,19 @@ C o m p i l a t i o n
   40  2   22  23  21
   41  3   31  34  34
   42  4   24  20  24;
-  43  Variable z;
-  44  Positive Variables x(j),yp(i),ym(i);
-  45  Equations ucelfce, omez0(i), omez1(i), omez2(j), omez3(j);
-  46  ucelfce..           z =E= sum(j, c(j) * x(j)) - sum(i, qm(i)*ym(i) + qp(i)*yp(i));
-  47  omez0(i)..          sum( j, a(i,j) * x(j) ) + yp(i) - ym(i) =E= b_UP(i);
-  48  omez1(i)..          sum( j, a(i,j) * x(j) ) =G= b_DOWN(i);
-  49  omez2(j)..          x(j) =L= x_UP(j);
-  50  omez3(j)..          x(j) =G= x_DOWN(j);
-  51  model vyroba / ucelfce, omez0, omez1, omez2, omez3 /;
-  52  yp.UP(i) = 1000;
-  53  ym.UP(i) = 1000;
-  54  solve vyroba maximizing z using LP;
-  55  display z.L, x.L;
+  43   
+  44  Variable z;
+  45  Positive Variables x(j),yp(i),ym(i);
+  46  Equations ucelfce, omez0(i), omez1(i), omez2(j), omez3(j);
+  47  ucelfce..           z =E= sum(j, c(j) * x(j)) - sum(i, qm(i)*ym(i) + qp(i)*yp(i));
+  48  omez0(i)..          sum( j, a(i,j) * x(j) ) + yp(i) - ym(i) =E= b_UP(i);
+  49  omez1(i)..          sum( j, a(i,j) * x(j)) =G= b_DOWN(i);
+  50  omez2(j)..          x(j) =L= x_UP(j);
+  51  omez3(j)..          x(j) =G= x_DOWN(j);
+  52  model vyroba / ucelfce, omez0, omez1, omez2, omez3 /;
+  53  yp.UP(i) = 1000;
+  54  ym.UP(i) = 1000;
+  55   
   56  file out / "vysledky.txt" /;
   57  put out;
   58  put "Vysledky a vstupy:" /;
@@ -64,126 +64,161 @@ C o m p i l a t i o n
   61  loop(j, put "x(" , j.tl:0 , ")":10;);
   62  loop(i, put "b_UP(" , i.tl:0 , ")":10;);
   63  loop(i, put "b_DN(" , i.tl:0 , ")":10;);
-  64  loop(j, put "x_UP(" , j.tl:0 , ")":10;);
-  65  loop(j, put "x_DN(" , j.tl:0 , ")":10;);
-  66  loop(i, loop(j, put "a(" , i.tl:0 , "," , j.tl:0 , ")":10;););
-  67  loop(i, put " qp(", i.TL:1, ")":11;);
-  68  loop(i, put " qm(", i.TL:1, ")":11;);
-  69  put /;
-  70   
-  71  a(i,j) = sum(s, p(s) * as(i,j,s));
-  72  qp(i) = sum(s, p(s) * qps(i,s));
-  73  qm(i) = sum(s, p(s) * qms(i,s));
-  74   
-  75  put "EV":3, "":1, vyroba.modelstat:7:0, vyroba.solvestat:7:0, z.l:12:2;
-  76  loop(j,
-  77      put x.l(j):10:2;
-  78      put "":2
-  79      put$(ord(j)=1) "":1;
-  80      put$(ord(j)=2) "":1;
-  81  );
-  82  loop(i,
-  83      put b_UP(i):13:2;
-  84      put$(ord(i)=1) "":3;
-  85      put$(ord(i)=2) "":3;
-  86      put$(ord(i)=3) "":3;
+  64  loop(i, put "Yp(" , i.tl:0 , ")":10;);
+  65  loop(i, put "Ym(" , i.tl:0 , ")":10;);
+  66  loop(j, put "x_UP(" , j.tl:0 , ")":10;);
+  67  loop(j, put "x_DN(" , j.tl:0 , ")":10;);
+  68  loop(i, loop(j, put "a(" , i.tl:0 , "," , j.tl:0 , ")":10;););
+  69  loop(i, put " qp(", i.TL:1, ")":11;);
+  70  loop(i, put " qm(", i.TL:1, ")":11;);
+  71  put /;
+  72   
+  73  a(i,j) = sum(s, p(s) * as(i,j,s));
+  74  qp(i) = sum(s, p(s) * qps(i,s));
+  75  qm(i) = sum(s, p(s) * qms(i,s));
+  76   
+  77  solve vyroba maximizing z using LP;
+  78  display z.L, x.L;
+  79  If((vyroba.modelstat EQ 4) OR (vyroba.modelstat EQ 19), zEVmax(s) = -INF;);
+  80  xEVmax(j,s) = x.L(j);
+  81  put "EV":3, "":1, vyroba.modelstat:7:0, vyroba.solvestat:7:0, z.l:12:2;
+  82  loop(j,
+  83      put x.l(j):10:2;
+  84      put "":2
+  85      put$(ord(j)=1) "":1;
+  86      put$(ord(j)=2) "":1;
   87  );
-  88  loop(i,put b_DOWN(i):16:2;);
-  89  loop(j, put x_UP(j):16:2;);
-  90  loop(j, put x_DOWN(j):16:2;);
-  91  loop(i, loop(j,put a(i,j):15:2;););
-  92  loop(i,
-  93          put qp(i):15:2;
-  94          put$(ord(i)=1) "":1;
-  95          put$(ord(i)=2) "":1;
-  96          put$(ord(i)=3) "":1;
-  97  );
-  98  loop(i,put qm(i):16:2;);
-  99  put /;
- 100   
- 101  #To Find the current value of X and cap the fucker
- 102  x.Lo(j) = x.L(j);
- 103  x.Up(j) = x.L(j);
- 104   
- 105  loop(s,
- 106      a(i,j) = as(i,j,s);
- 107      qp(i) = qps(i,s);
- 108      qm(i) = qms(i,s);
- 109   
- 110      solve vyroba maximizing z using LP;
- 111      display z.L, x.L;
- 112   
- 113      zEVmax(s) = z.L;
- 114      if ((vyroba.modelstat = 4) or (vyroba.modelstat = 19),
- 115          zEVmax(s) = -INF
- 116      );
- 117   
- 118      xEVmax(j,s) = x.L(j);
- 119      put s.tl:3, p(s):5:3, vyroba.modelstat:3:0, vyroba.solvestat:7:0, z.L:11:2;
- 120      loop(j,
- 121          put x.L(j):11:2;
- 122          put "":1;
- 123          put$(ord(j)=1) "":1;
- 124          put$(ord(j)=2) "":1;
- 125      );
- 126      loop(i,
- 127          put b_UP(i):14:2;
- 128          put$(ord(i)=1) "":2;
- 129          put$(ord(i)=2) "":2;
- 130          put$(ord(i)=3) "":2;
- 131      );
- 132      loop(i, put b_DOWN(i):16:2;);
- 133      loop(j, put x_UP(j):16:2;);
- 134      loop(j, put x_DOWN(j):16:2;);
- 135      loop(i, loop(j, put a(i,j):15:2;););
- 136      loop(i,
- 137          put qp(i):15:2;
- 138          put$(ord(i)=1) "":1;
- 139          put$(ord(i)=2) "":1;
- 140          put$(ord(i)=3) "":1;
- 141      );
- 142      loop(i,put qm(i):16:2;);
- 143      put /;
- 144  );
- 145   
- 146  EzEV   = sum(s,p(s) * zEVmax(s) );
- 147  put "EEV    = ", EzEV:10:2 /;
- 148  If(EzEV GT -INF,varzEV = sum(s,p(s) * zEVmax(s) * zEVmax(s) ) - EzEV * EzEV;);
- 149  If(EzEV EQ -INF, varzEV = UNDF;);
- 150  put "varzEV = ", varzEV:10:2 /;
- 151  szEV   = sqrt(varzEV);
- 152  put "stdzEV = ", szEV:10:2 /;
+  88  loop(i,
+  89      put b_UP(i):13:2;
+  90      put$(ord(i)=1) "":3;
+  91      put$(ord(i)=2) "":3;
+  92      put$(ord(i)=3) "":3;
+  93  );
+  94  loop(i,put b_DOWN(i):16:2;);
+  95  loop(i,put yp.L(i):14:2;);
+  96  loop(i,put ym.L(i):14:2;);
+  97  loop(j,
+  98      put x_UP(j):15:2;
+  99      put$(ord(j)=1) "":1;
+ 100      put$(ord(j)=2) "":1;
+ 101  );
+ 102  loop(j,
+ 103      put x_DOWN(j):15:2;
+ 104      put$(ord(j)=1) "":1;
+ 105      put$(ord(j)=2) "":1;
+ 106  );
+ 107  put "":1
+ 108  loop(i,
+ 109      loop(j,
+ 110          put a(i,j):15:2;
+ 111          #put$((ord(i)=1)and(ord(j)=1)) "":1;
+ 112      );
+ 113  );
+ 114  loop(i,
+ 115          put qp(i):15:2;
+ 116          put$(ord(i)=1) "":1;
+ 117          put$(ord(i)=2) "":1;
+ 118          put$(ord(i)=3) "":1;
+ 119  );
+ 120  put "":1
+ 121  loop(i,put qm(i):16:2;);
+ 122  put /;
+ 123   
+ 124  #To Find the current value of X and cap the fucker
+ 125  x.Lo(j) = x.L(j);
+ 126  x.Up(j) = x.L(j);
+ 127   
+ 128  loop(s,
+ 129      a(i,j) = as(i,j,s);
+ 130      qp(i) = qps(i,s);
+ 131      qm(i) = qms(i,s);
+ 132   
+ 133      solve vyroba maximizing z using LP;
+ 134      display z.L, x.L;
+ 135   
+ 136      zEVmax(s) = z.L;
+ 137      if ((vyroba.modelstat = 4) or (vyroba.modelstat = 19),
+ 138          zEVmax(s) = -INF
+ 139      );
+ 140      xEVmax(j,s) = x.L(j);
+ 141   
+ 142      put s.tl:3, p(s):5:3, vyroba.modelstat:3:0, vyroba.solvestat:7:0, z.L:12:2;
+ 143      loop(j,
+ 144          put x.L(j):10:2;
+ 145          put "":2;
+ 146          put$(ord(j)=1) "":1;
+ 147          put$(ord(j)=2) "":1;
+ 148      );
+ 149      loop(i,
+ 150          put b_UP(i):13:2;
+ 151          put$(ord(i)=1) "":3;
+ 152          put$(ord(i)=2) "":3;
+ 153          put$(ord(i)=3) "":3;
+ 154      );
+ 155      loop(i, put b_DOWN(i):16:2;);
+ 156      loop(i,put yp.L(i):14:2;);
+ 157      loop(i,put ym.L(i):14:2;);
+ 158      loop(j,
+ 159          put x_UP(j):15:2;
+ 160          put$(ord(j)=1) "":1;
+ 161          put$(ord(j)=2) "":1;
+ 162      );
+ 163      loop(j,
+ 164          put x_DOWN(j):15:2;
+ 165          put$(ord(j)=1) "":1;
+ 166          put$(ord(j)=2) "":1;
+ 167      );
+ 168      put "":1
+ 169      loop(i, loop(j, put a(i,j):15:2;););
+ 170      loop(i,
+ 171          put qp(i):15:2;
+ 172          put$(ord(i)=1) "":1;
+ 173          put$(ord(i)=2) "":1;
+ 174          put$(ord(i)=3) "":1;
+ 175      );
+ 176      put "":1
+ 177      loop(i,put qm(i):16:2;);
+ 178      put /;
+ 179  );
+ 180   
+ 181  EzEV   = sum(s,p(s) * zEVmax(s) );
+ 182  put "EEV    = ", EzEV:10:2 /;
+ 183  If(EzEV GT -INF,varzEV = sum(s,p(s) * zEVmax(s) * zEVmax(s) ) - EzEV * EzEV;);
+ 184  If(EzEV EQ -INF, varzEV = UNDF;);
+ 185  put "varzEV = ", varzEV:10:2 /;
+ 186  szEV   = sqrt(varzEV);
+ 187  put "stdzEV = ", szEV:10:2 /;
 
 
-COMPILATION TIME     =        0.000 SECONDS      3 MB  49.1.0 5c4d4ed6 WEX-WEI
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:11:02 Page 2
+COMPILATION TIME     =        0.016 SECONDS      3 MB  49.4.0 6fb2fe8b WEX-WEI
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:37:07 Page 2
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Equation Listing    SOLVE vyroba Using LP From line 54
+Equation Listing    SOLVE vyroba Using LP From line 77
 
 
 ---- ucelfce  =E=  
 
-ucelfce..  z - 145*x(1) - 150*x(2) - 147*x(3) + 10*ym(1) + 20*ym(2) + 30*ym(3) =E= 0 ; (LHS = 0)
+ucelfce..  z - 145*x(1) - 150*x(2) - 147*x(3) + 22.5*ym(1) + 23.5*ym(2) + 17*ym(3) =E= 0 ; (LHS = 0)
      
 
 ---- omez0  =E=  
 
-omez0(1)..  30*x(1) + 28*x(2) + 27*x(3) + yp(1) - ym(1) =E= 4000 ; (LHS = 0, INFES = 4000 ****)
+omez0(1)..  28.5*x(1) + 28.25*x(2) + 27.55*x(3) + yp(1) - ym(1) =E= 4000 ; (LHS = 0, INFES = 4000 ****)
      
-omez0(2)..  22*x(1) + 23*x(2) + 21*x(3) + yp(2) - ym(2) =E= 3000 ; (LHS = 0, INFES = 3000 ****)
+omez0(2)..  22.9*x(1) + 22.1*x(2) + 21.3*x(3) + yp(2) - ym(2) =E= 3000 ; (LHS = 0, INFES = 3000 ****)
      
-omez0(3)..  31*x(1) + 34*x(2) + 34*x(3) + yp(3) - ym(3) =E= 4500 ; (LHS = 0, INFES = 4500 ****)
+omez0(3)..  30.7*x(1) + 34.65*x(2) + 33.4*x(3) + yp(3) - ym(3) =E= 4500 ; (LHS = 0, INFES = 4500 ****)
      
 REMAINING ENTRY SKIPPED
 
 
 ---- omez1  =G=  
 
-omez1(1)..  30*x(1) + 28*x(2) + 27*x(3) =G= 1000 ; (LHS = 0, INFES = 1000 ****)
+omez1(1)..  28.5*x(1) + 28.25*x(2) + 27.55*x(3) =G= 1000 ; (LHS = 0, INFES = 1000 ****)
      
-omez1(2)..  22*x(1) + 23*x(2) + 21*x(3) =G= 1500 ; (LHS = 0, INFES = 1500 ****)
+omez1(2)..  22.9*x(1) + 22.1*x(2) + 21.3*x(3) =G= 1500 ; (LHS = 0, INFES = 1500 ****)
      
-omez1(3)..  31*x(1) + 34*x(2) + 34*x(3) =G= 4000 ; (LHS = 0, INFES = 4000 ****)
+omez1(3)..  30.7*x(1) + 34.65*x(2) + 33.4*x(3) =G= 4000 ; (LHS = 0, INFES = 4000 ****)
      
 REMAINING ENTRY SKIPPED
 
@@ -205,9 +240,9 @@ omez3(2)..  x(2) =G= 40 ; (LHS = 0, INFES = 40 ****)
      
 omez3(3)..  x(3) =G= 20 ; (LHS = 0, INFES = 20 ****)
      
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:11:02 Page 3
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:37:07 Page 3
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Column Listing      SOLVE vyroba Using LP From line 54
+Column Listing      SOLVE vyroba Using LP From line 77
 
 
 ---- z  
@@ -222,42 +257,42 @@ z
 x(1)
                 (.LO, .L, .UP, .M = 0, 0, +INF, 0)
      -145       ucelfce
-       30       omez0(1)
-       22       omez0(2)
-       31       omez0(3)
-       24       omez0(4)
-       30       omez1(1)
-       22       omez1(2)
-       31       omez1(3)
-       24       omez1(4)
+       28.5     omez0(1)
+       22.9     omez0(2)
+       30.7     omez0(3)
+       21.85    omez0(4)
+       28.5     omez1(1)
+       22.9     omez1(2)
+       30.7     omez1(3)
+       21.85    omez1(4)
         1       omez2(1)
         1       omez3(1)
 
 x(2)
                 (.LO, .L, .UP, .M = 0, 0, +INF, 0)
      -150       ucelfce
-       28       omez0(1)
-       23       omez0(2)
-       34       omez0(3)
-       20       omez0(4)
-       28       omez1(1)
-       23       omez1(2)
-       34       omez1(3)
-       20       omez1(4)
+       28.25    omez0(1)
+       22.1     omez0(2)
+       34.65    omez0(3)
+       20.35    omez0(4)
+       28.25    omez1(1)
+       22.1     omez1(2)
+       34.65    omez1(3)
+       20.35    omez1(4)
         1       omez2(2)
         1       omez3(2)
 
 x(3)
                 (.LO, .L, .UP, .M = 0, 0, +INF, 0)
      -147       ucelfce
-       27       omez0(1)
-       21       omez0(2)
-       34       omez0(3)
-       24       omez0(4)
-       27       omez1(1)
-       21       omez1(2)
-       34       omez1(3)
-       24       omez1(4)
+       27.55    omez0(1)
+       21.3     omez0(2)
+       33.4     omez0(3)
+       22.7     omez0(4)
+       27.55    omez1(1)
+       21.3     omez1(2)
+       33.4     omez1(3)
+       22.7     omez1(4)
         1       omez2(3)
         1       omez3(3)
 
@@ -282,23 +317,23 @@ REMAINING ENTRY SKIPPED
 
 ym(1)
                 (.LO, .L, .UP, .M = 0, 0, 1000, 0)
-       10       ucelfce
+       22.5     ucelfce
        -1       omez0(1)
 
 ym(2)
                 (.LO, .L, .UP, .M = 0, 0, 1000, 0)
-       20       ucelfce
+       23.5     ucelfce
        -1       omez0(2)
 
 ym(3)
                 (.LO, .L, .UP, .M = 0, 0, 1000, 0)
-       30       ucelfce
+       17       ucelfce
        -1       omez0(3)
 
 REMAINING ENTRY SKIPPED
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:11:02 Page 4
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:37:07 Page 4
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Range Statistics    SOLVE vyroba Using LP From line 54
+Range Statistics    SOLVE vyroba Using LP From line 77
 
 
 RANGE STATISTICS (ABSOLUTE NON-ZERO FINITE VALUES)
@@ -307,9 +342,9 @@ RHS       [min, max] : [ 2.000E+01, 4.500E+03] - Zero values observed as well
 Bound     [min, max] : [ 1.000E+03, 1.000E+03] - Zero values observed as well
 Matrix    [min, max] : [ 1.000E+00, 1.500E+02]
 
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:11:02 Page 5
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:37:07 Page 5
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Model Statistics    SOLVE vyroba Using LP From line 54
+Model Statistics    SOLVE vyroba Using LP From line 77
 
 
 MODEL STATISTICS
@@ -319,25 +354,25 @@ BLOCKS OF VARIABLES           4     SINGLE VARIABLES           12
 NON ZERO ELEMENTS            45
 
 
-GENERATION TIME      =        0.000 SECONDS      4 MB  49.1.0 5c4d4ed6 WEX-WEI
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:11:02 Page 6
+GENERATION TIME      =        0.000 SECONDS      4 MB  49.4.0 6fb2fe8b WEX-WEI
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:37:07 Page 6
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Solution Report     SOLVE vyroba Using LP From line 54
+Solution Report     SOLVE vyroba Using LP From line 77
 
 
                S O L V E      S U M M A R Y
 
      MODEL   vyroba              OBJECTIVE  z
      TYPE    LP                  DIRECTION  MAXIMIZE
-     SOLVER  CPLEX               FROM LINE  54
+     SOLVER  CPLEX               FROM LINE  77
 
 **** SOLVER STATUS     1 Normal Completion
 **** MODEL STATUS      1 Optimal
-**** OBJECTIVE VALUE            20116.4948
+**** OBJECTIVE VALUE            20092.4813
 
  RESOURCE USAGE, LIMIT          0.000 10000000000.000
  ITERATION COUNT, LIMIT         2    2147483647
-*** This solver runs with a demo license. No commercial use.
+*** This solver runs with a community license. No commercial use.
 --- GMO setup time: 0.00s
 --- GMO memory 0.50 Mb (peak 0.50 Mb)
 --- Dictionary memory 0.00 Mb
@@ -350,7 +385,7 @@ Solution Report     SOLVE vyroba Using LP From line 54
 
 
 Optimal solution found
-Objective:        20116.494845
+Objective:        20092.481298
 
 
                            LOWER          LEVEL          UPPER         MARGINAL
@@ -362,145 +397,145 @@ Objective:        20116.494845
          LOWER          LEVEL          UPPER         MARGINAL
 
 1      4000.0000      4000.0000      4000.0000         EPS         
-2      3000.0000      3000.0000      3000.0000         3.8454      
-3      4500.0000      4500.0000      4500.0000         1.9485      
+2      3000.0000      3000.0000      3000.0000         2.9752      
+3      4500.0000      4500.0000      4500.0000         2.5038      
 4      3000.0000      3000.0000      3000.0000         EPS         
 
 ---- EQU omez1  
 
          LOWER          LEVEL          UPPER         MARGINAL
 
-1      1000.0000      3878.7629        +INF             .          
+1      1000.0000      3823.0389        +INF             .          
 2      1500.0000      3000.0000        +INF             .          
 3      4000.0000      4500.0000        +INF             .          
-4       800.0000      3120.8247        +INF             .          
+4       800.0000      2968.9874        +INF             .          
 
 ---- EQU omez2  
 
          LOWER          LEVEL          UPPER         MARGINAL
 
-1        -INF           49.2784       100.0000          .          
+1        -INF           39.1726       100.0000          .          
 2        -INF           40.0000       100.0000          .          
-3        -INF           47.4227       100.0000          .          
+3        -INF           57.2276       100.0000          .          
 
 ---- EQU omez3  
 
          LOWER          LEVEL          UPPER         MARGINAL
 
-1        20.0000        49.2784        +INF             .          
-2        40.0000        40.0000        +INF           -4.6907      
-3        20.0000        47.4227        +INF             .          
+1        20.0000        39.1726        +INF             .          
+2        40.0000        40.0000        +INF           -2.5100      
+3        20.0000        57.2276        +INF             .          
 
                            LOWER          LEVEL          UPPER         MARGINAL
 
----- VAR z                 -INF        20116.4948        +INF             .          
+---- VAR z                 -INF        20092.4813        +INF             .          
 
 ---- VAR x  
 
          LOWER          LEVEL          UPPER         MARGINAL
 
-1          .            49.2784        +INF             .          
+1          .            39.1726        +INF             .          
 2          .            40.0000        +INF             .          
-3          .            47.4227        +INF             .          
+3          .            57.2276        +INF             .          
 
 ---- VAR yp  
 
          LOWER          LEVEL          UPPER         MARGINAL
 
-1          .           121.2371      1000.0000          .          
-2          .              .          1000.0000        -3.8454      
-3          .              .          1000.0000        -1.9485      
-4          .              .          1000.0000         EPS         
+1          .           176.9611      1000.0000          .          
+2          .              .          1000.0000        -2.9752      
+3          .              .          1000.0000        -2.5038      
+4          .            31.0126      1000.0000          .          
 
 ---- VAR ym  
 
          LOWER          LEVEL          UPPER         MARGINAL
 
-1          .              .          1000.0000       -10.0000      
-2          .              .          1000.0000       -16.1546      
-3          .              .          1000.0000       -28.0515      
-4          .           120.8247      1000.0000          .          
+1          .              .          1000.0000       -22.5000      
+2          .              .          1000.0000       -20.5248      
+3          .              .          1000.0000       -14.4962      
+4          .              .          1000.0000         EPS         
 
 
 **** REPORT SUMMARY :        0     NONOPT
                              0 INFEASIBLE
                              0  UNBOUNDED
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:11:02 Page 7
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:37:07 Page 7
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
 E x e c u t i o n
 
 
-----     55 VARIABLE z.L                   =    20116.495  
+----     78 VARIABLE z.L                   =    20092.481  
 
-----     55 VARIABLE x.L  
+----     78 VARIABLE x.L  
 
-1 49.278,    2 40.000,    3 47.423
+1 39.173,    2 40.000,    3 57.228
 
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:11:02 Page 8
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:37:07 Page 8
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Equation Listing    SOLVE vyroba Using LP From line 110
+Equation Listing    SOLVE vyroba Using LP From line 133
 
 
 ---- ucelfce  =E=  
 
-ucelfce..  z - 145*x(1) - 150*x(2) - 147*x(3) + 10*ym(1) + 20*ym(2) + 30*ym(3) =E= 0 ; (LHS = 0)
+ucelfce..  z - 145*x(1) - 150*x(2) - 147*x(3) + 10*ym(1) + 20*ym(2) + 30*ym(3) =E= 0 ; (LHS = -3.63797880709171E-12, INFES = 3.63797880709171E-12 ****)
      
 
 ---- omez0  =E=  
 
-omez0(1)..  30*x(1) + 28*x(2) + 27*x(3) + yp(1) - ym(1) =E= 4000 ; (LHS = 4000)
+omez0(1)..  30*x(1) + 28*x(2) + 27*x(3) + yp(1) - ym(1) =E= 4000 ; (LHS = 4017.28373141055, INFES = 17.2837314105454 ****)
      
-omez0(2)..  22*x(1) + 23*x(2) + 21*x(3) + yp(2) - ym(2) =E= 3000 ; (LHS = 3000)
+omez0(2)..  22*x(1) + 23*x(2) + 21*x(3) + yp(2) - ym(2) =E= 3000 ; (LHS = 2983.57638575935, INFES = 16.4236142406489 ****)
      
-omez0(3)..  31*x(1) + 34*x(2) + 34*x(3) + yp(3) - ym(3) =E= 4500 ; (LHS = 4500)
+omez0(3)..  31*x(1) + 34*x(2) + 34*x(3) + yp(3) - ym(3) =E= 4500 ; (LHS = 4520.08832807571, INFES = 20.0883280757098 ****)
      
 REMAINING ENTRY SKIPPED
 
 
 ---- omez1  =G=  
 
-omez1(1)..  30*x(1) + 28*x(2) + 27*x(3) =G= 1000 ; (LHS = 3878.76288659794)
+omez1(1)..  30*x(1) + 28*x(2) + 27*x(3) =G= 1000 ; (LHS = 3840.32266786841)
      
-omez1(2)..  22*x(1) + 23*x(2) + 21*x(3) =G= 1500 ; (LHS = 3000)
+omez1(2)..  22*x(1) + 23*x(2) + 21*x(3) =G= 1500 ; (LHS = 2983.57638575935)
      
-omez1(3)..  31*x(1) + 34*x(2) + 34*x(3) =G= 4000 ; (LHS = 4500)
+omez1(3)..  31*x(1) + 34*x(2) + 34*x(3) =G= 4000 ; (LHS = 4520.08832807571)
      
 REMAINING ENTRY SKIPPED
 
 
 ---- omez2  =L=  
 
-omez2(1)..  x(1) =L= 100 ; (LHS = 49.2783505154639)
+omez2(1)..  x(1) =L= 100 ; (LHS = 39.1726002703921)
      
 omez2(2)..  x(2) =L= 100 ; (LHS = 40)
      
-omez2(3)..  x(3) =L= 100 ; (LHS = 47.4226804123711)
+omez2(3)..  x(3) =L= 100 ; (LHS = 57.2275799909869)
      
 
 ---- omez3  =G=  
 
-omez3(1)..  x(1) =G= 20 ; (LHS = 49.2783505154639)
+omez3(1)..  x(1) =G= 20 ; (LHS = 39.1726002703921)
      
 omez3(2)..  x(2) =G= 40 ; (LHS = 40)
      
-omez3(3)..  x(3) =G= 20 ; (LHS = 47.4226804123711)
+omez3(3)..  x(3) =G= 20 ; (LHS = 57.2275799909869)
      
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:11:02 Page 9
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:37:07 Page 9
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Column Listing      SOLVE vyroba Using LP From line 110
+Column Listing      SOLVE vyroba Using LP From line 133
 
 
 ---- z  
 
 z
-                (.LO, .L, .UP, .M = -INF, 20116.4948453608, +INF, 0)
+                (.LO, .L, .UP, .M = -INF, 20092.4812978819, +INF, 0)
         1       ucelfce
 
 
 ---- x  
 
 x(1)
-                (.LO, .L, .UP, .M = 49.2783505154639, 49.2783505154639, 49.2783505154639, 0)
+                (.LO, .L, .UP, .M = 39.1726002703921, 39.1726002703921, 39.1726002703921, 0)
      -145       ucelfce
        30       omez0(1)
        22       omez0(2)
@@ -528,7 +563,7 @@ x(2)
         1       omez3(2)
 
 x(3)
-                (.LO, .L, .UP, .M = 47.4226804123711, 47.4226804123711, 47.4226804123711, 0)
+                (.LO, .L, .UP, .M = 57.2275799909869, 57.2275799909869, 57.2275799909869, 0)
      -147       ucelfce
        27       omez0(1)
        21       omez0(2)
@@ -545,15 +580,15 @@ x(3)
 ---- yp  
 
 yp(1)
-                (.LO, .L, .UP, .M = 0, 121.237113402062, 1000, 0)
+                (.LO, .L, .UP, .M = 0, 176.961063542136, 1000, 0)
         1       omez0(1)
 
 yp(2)
-                (.LO, .L, .UP, .M = 0, 0, 1000, -3.84536082474227)
+                (.LO, .L, .UP, .M = 0, 0, 1000, -2.97521406038757)
         1       omez0(2)
 
 yp(3)
-                (.LO, .L, .UP, .M = 0, 0, 1000, -1.94845360824742)
+                (.LO, .L, .UP, .M = 0, 0, 1000, -2.50383055430374)
         1       omez0(3)
 
 REMAINING ENTRY SKIPPED
@@ -561,35 +596,35 @@ REMAINING ENTRY SKIPPED
 ---- ym  
 
 ym(1)
-                (.LO, .L, .UP, .M = 0, 0, 1000, -10)
+                (.LO, .L, .UP, .M = 0, 0, 1000, -22.5)
        10       ucelfce
        -1       omez0(1)
 
 ym(2)
-                (.LO, .L, .UP, .M = 0, 0, 1000, -16.1546391752577)
+                (.LO, .L, .UP, .M = 0, 0, 1000, -20.5247859396124)
        20       ucelfce
        -1       omez0(2)
 
 ym(3)
-                (.LO, .L, .UP, .M = 0, 0, 1000, -28.0515463917526)
+                (.LO, .L, .UP, .M = 0, 0, 1000, -14.4961694456963)
        30       ucelfce
        -1       omez0(3)
 
 REMAINING ENTRY SKIPPED
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:11:02 Page 10
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:37:07 Page 10
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Range Statistics    SOLVE vyroba Using LP From line 110
+Range Statistics    SOLVE vyroba Using LP From line 133
 
 
 RANGE STATISTICS (ABSOLUTE NON-ZERO FINITE VALUES)
 
 RHS       [min, max] : [ 2.000E+01, 4.500E+03] - Zero values observed as well
-Bound     [min, max] : [ 4.000E+01, 1.000E+03] - Zero values observed as well
+Bound     [min, max] : [ 3.917E+01, 1.000E+03] - Zero values observed as well
 Matrix    [min, max] : [ 1.000E+00, 1.500E+02]
 
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:11:02 Page 11
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:37:07 Page 11
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Model Statistics    SOLVE vyroba Using LP From line 110
+Model Statistics    SOLVE vyroba Using LP From line 133
 
 
 LOOPS                                    s   1
@@ -602,27 +637,27 @@ BLOCKS OF VARIABLES           4     SINGLE VARIABLES           12
 NON ZERO ELEMENTS            45
 
 
-GENERATION TIME      =        0.016 SECONDS      4 MB  49.1.0 5c4d4ed6 WEX-WEI
+GENERATION TIME      =        0.000 SECONDS      4 MB  49.4.0 6fb2fe8b WEX-WEI
                L O O P S                  s 1
 
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:11:02 Page 12
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:37:07 Page 12
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Solution Report     SOLVE vyroba Using LP From line 110
+Solution Report     SOLVE vyroba Using LP From line 133
 
 
                S O L V E      S U M M A R Y
 
      MODEL   vyroba              OBJECTIVE  z
      TYPE    LP                  DIRECTION  MAXIMIZE
-     SOLVER  CPLEX               FROM LINE  110
+     SOLVER  CPLEX               FROM LINE  133
 
 **** SOLVER STATUS     1 Normal Completion
 **** MODEL STATUS      1 Optimal
-**** OBJECTIVE VALUE            20116.4948
+**** OBJECTIVE VALUE            19489.8315
 
  RESOURCE USAGE, LIMIT          0.000 10000000000.000
  ITERATION COUNT, LIMIT         0    2147483647
-*** This solver runs with a demo license. No commercial use.
+*** This solver runs with a community license. No commercial use.
 --- GMO setup time: 0.00s
 --- GMO memory 0.50 Mb (peak 0.50 Mb)
 --- Dictionary memory 0.00 Mb
@@ -635,7 +670,7 @@ Solution Report     SOLVE vyroba Using LP From line 110
 
 
 Optimal solution found
-Objective:        20116.494845
+Objective:        19489.831456
 
 
                            LOWER          LEVEL          UPPER         MARGINAL
@@ -648,53 +683,53 @@ Objective:        20116.494845
 
 1      4000.0000      4000.0000      4000.0000         EPS         
 2      3000.0000      3000.0000      3000.0000         EPS         
-3      4500.0000      4500.0000      4500.0000         EPS         
+3      4500.0000      4500.0000      4500.0000        30.0000      
 4      3000.0000      3000.0000      3000.0000         EPS         
 
 ---- EQU omez1  
 
          LOWER          LEVEL          UPPER         MARGINAL
 
-1      1000.0000      3878.7629        +INF             .          
-2      1500.0000      3000.0000        +INF             .          
-3      4000.0000      4500.0000        +INF             .          
-4       800.0000      3120.8247        +INF             .          
+1      1000.0000      3840.3227        +INF             .          
+2      1500.0000      2983.5764        +INF             .          
+3      4000.0000      4520.0883        +INF             .          
+4       800.0000      3113.6043        +INF             .          
 
 ---- EQU omez2  
 
          LOWER          LEVEL          UPPER         MARGINAL
 
-1        -INF           49.2784       100.0000          .          
+1        -INF           39.1726       100.0000          .          
 2        -INF           40.0000       100.0000          .          
-3        -INF           47.4227       100.0000          .          
+3        -INF           57.2276       100.0000          .          
 
 ---- EQU omez3  
 
          LOWER          LEVEL          UPPER         MARGINAL
 
-1        20.0000        49.2784        +INF             .          
+1        20.0000        39.1726        +INF             .          
 2        40.0000        40.0000        +INF             .          
-3        20.0000        47.4227        +INF             .          
+3        20.0000        57.2276        +INF             .          
 
                            LOWER          LEVEL          UPPER         MARGINAL
 
----- VAR z                 -INF        20116.4948        +INF             .          
+---- VAR z                 -INF        19489.8315        +INF             .          
 
 ---- VAR x  
 
          LOWER          LEVEL          UPPER         MARGINAL
 
-1        49.2784        49.2784        49.2784       145.0000      
-2        40.0000        40.0000        40.0000       150.0000      
-3        47.4227        47.4227        47.4227       147.0000      
+1        39.1726        39.1726        39.1726      -785.0000      
+2        40.0000        40.0000        40.0000      -870.0000      
+3        57.2276        57.2276        57.2276      -873.0000      
 
 ---- VAR yp  
 
          LOWER          LEVEL          UPPER         MARGINAL
 
-1          .           121.2371      1000.0000          .          
-2          .       3.410605E-13      1000.0000          .          
-3          .       2.273737E-13      1000.0000          .          
+1          .           159.6773      1000.0000          .          
+2          .            16.4236      1000.0000          .          
+3          .              .          1000.0000       -30.0000      
 4          .              .          1000.0000         EPS         
 
 ---- VAR ym  
@@ -703,37 +738,37 @@ Objective:        20116.494845
 
 1          .              .          1000.0000       -10.0000      
 2          .              .          1000.0000       -20.0000      
-3          .              .          1000.0000       -30.0000      
-4          .           120.8247      1000.0000          .          
+3          .            20.0883      1000.0000          .          
+4          .           113.6043      1000.0000          .          
 
 
 **** REPORT SUMMARY :        0     NONOPT
                              0 INFEASIBLE
                              0  UNBOUNDED
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:11:02 Page 13
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:37:07 Page 13
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
 E x e c u t i o n
 
 
-----    111 VARIABLE z.L                   =    20116.495  
+----    134 VARIABLE z.L                   =    19489.831  
 
-----    111 VARIABLE x.L  
+----    134 VARIABLE x.L  
 
-1 49.278,    2 40.000,    3 47.423
+1 39.173,    2 40.000,    3 57.228
 
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:11:02 Page 14
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:37:07 Page 14
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Equation Listing    SOLVE vyroba Using LP From line 110
+Equation Listing    SOLVE vyroba Using LP From line 133
 
 
 ---- ucelfce  =E=  
 
-ucelfce..  z - 145*x(1) - 150*x(2) - 147*x(3) + 20*ym(1) + 30*ym(2) + 10*ym(3) =E= 0 ; (LHS = 0)
+ucelfce..  z - 145*x(1) - 150*x(2) - 147*x(3) + 20*ym(1) + 30*ym(2) + 10*ym(3) =E= 0 ; (LHS = -401.766561514196, INFES = 401.766561514196 ****)
      
 
 ---- omez0  =E=  
 
-omez0(1)..  30*x(1) + 27*x(2) + 26*x(3) + yp(1) - ym(1) =E= 4000 ; (LHS = 3912.57731958763, INFES = 87.4226804123709 ****)
+omez0(1)..  30*x(1) + 27*x(2) + 26*x(3) + yp(1) - ym(1) =E= 4000 ; (LHS = 3902.77242000901, INFES = 97.2275799909867 ****)
      
 omez0(2)..  22*x(1) + 23*x(2) + 21*x(3) + yp(2) - ym(2) =E= 3000 ; (LHS = 3000)
      
@@ -744,48 +779,48 @@ REMAINING ENTRY SKIPPED
 
 ---- omez1  =G=  
 
-omez1(1)..  30*x(1) + 27*x(2) + 26*x(3) =G= 1000 ; (LHS = 3791.34020618557)
+omez1(1)..  30*x(1) + 27*x(2) + 26*x(3) =G= 1000 ; (LHS = 3743.09508787742)
      
-omez1(2)..  22*x(1) + 23*x(2) + 21*x(3) =G= 1500 ; (LHS = 3000)
+omez1(2)..  22*x(1) + 23*x(2) + 21*x(3) =G= 1500 ; (LHS = 2983.57638575935)
      
-omez1(3)..  31*x(1) + 35*x(2) + 34*x(3) =G= 4000 ; (LHS = 4540)
+omez1(3)..  31*x(1) + 35*x(2) + 34*x(3) =G= 4000 ; (LHS = 4560.08832807571)
      
 REMAINING ENTRY SKIPPED
 
 
 ---- omez2  =L=  
 
-omez2(1)..  x(1) =L= 100 ; (LHS = 49.2783505154639)
+omez2(1)..  x(1) =L= 100 ; (LHS = 39.1726002703921)
      
 omez2(2)..  x(2) =L= 100 ; (LHS = 40)
      
-omez2(3)..  x(3) =L= 100 ; (LHS = 47.4226804123711)
+omez2(3)..  x(3) =L= 100 ; (LHS = 57.2275799909869)
      
 
 ---- omez3  =G=  
 
-omez3(1)..  x(1) =G= 20 ; (LHS = 49.2783505154639)
+omez3(1)..  x(1) =G= 20 ; (LHS = 39.1726002703921)
      
 omez3(2)..  x(2) =G= 40 ; (LHS = 40)
      
-omez3(3)..  x(3) =G= 20 ; (LHS = 47.4226804123711)
+omez3(3)..  x(3) =G= 20 ; (LHS = 57.2275799909869)
      
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:11:02 Page 15
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:37:07 Page 15
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Column Listing      SOLVE vyroba Using LP From line 110
+Column Listing      SOLVE vyroba Using LP From line 133
 
 
 ---- z  
 
 z
-                (.LO, .L, .UP, .M = -INF, 20116.4948453608, +INF, 0)
+                (.LO, .L, .UP, .M = -INF, 19489.8314556106, +INF, 0)
         1       ucelfce
 
 
 ---- x  
 
 x(1)
-                (.LO, .L, .UP, .M = 49.2783505154639, 49.2783505154639, 49.2783505154639, 145)
+                (.LO, .L, .UP, .M = 39.1726002703921, 39.1726002703921, 39.1726002703921, -785)
      -145       ucelfce
        30       omez0(1)
        22       omez0(2)
@@ -799,7 +834,7 @@ x(1)
         1       omez3(1)
 
 x(2)
-                (.LO, .L, .UP, .M = 40, 40, 40, 150)
+                (.LO, .L, .UP, .M = 40, 40, 40, -870)
      -150       ucelfce
        27       omez0(1)
        23       omez0(2)
@@ -813,7 +848,7 @@ x(2)
         1       omez3(2)
 
 x(3)
-                (.LO, .L, .UP, .M = 47.4226804123711, 47.4226804123711, 47.4226804123711, 147)
+                (.LO, .L, .UP, .M = 57.2275799909869, 57.2275799909869, 57.2275799909869, -873)
      -147       ucelfce
        26       omez0(1)
        21       omez0(2)
@@ -830,15 +865,15 @@ x(3)
 ---- yp  
 
 yp(1)
-                (.LO, .L, .UP, .M = 0, 121.237113402062, 1000, 0)
+                (.LO, .L, .UP, .M = 0, 159.67733213159, 1000, 0)
         1       omez0(1)
 
 yp(2)
-                (.LO, .L, .UP, .M = 0, 3.41060513164848E-13, 1000, 0)
+                (.LO, .L, .UP, .M = 0, 16.4236142406489, 1000, 0)
         1       omez0(2)
 
 yp(3)
-                (.LO, .L, .UP, .M = 0, 2.27373675443232E-13, 1000, 0)
+                (.LO, .L, .UP, .M = 0, 0, 1000, -30)
         1       omez0(3)
 
 REMAINING ENTRY SKIPPED
@@ -856,25 +891,25 @@ ym(2)
        -1       omez0(2)
 
 ym(3)
-                (.LO, .L, .UP, .M = 0, 0, 1000, -30)
+                (.LO, .L, .UP, .M = 0, 20.0883280757098, 1000, 0)
        10       ucelfce
        -1       omez0(3)
 
 REMAINING ENTRY SKIPPED
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:11:02 Page 16
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:37:07 Page 16
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Range Statistics    SOLVE vyroba Using LP From line 110
+Range Statistics    SOLVE vyroba Using LP From line 133
 
 
 RANGE STATISTICS (ABSOLUTE NON-ZERO FINITE VALUES)
 
 RHS       [min, max] : [ 2.000E+01, 4.500E+03] - Zero values observed as well
-Bound     [min, max] : [ 4.000E+01, 1.000E+03] - Zero values observed as well
+Bound     [min, max] : [ 3.917E+01, 1.000E+03] - Zero values observed as well
 Matrix    [min, max] : [ 1.000E+00, 1.500E+02]
 
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:11:02 Page 17
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:37:07 Page 17
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Model Statistics    SOLVE vyroba Using LP From line 110
+Model Statistics    SOLVE vyroba Using LP From line 133
 
 
 LOOPS                                    s   2
@@ -887,27 +922,27 @@ BLOCKS OF VARIABLES           4     SINGLE VARIABLES           12
 NON ZERO ELEMENTS            45
 
 
-GENERATION TIME      =        0.000 SECONDS      4 MB  49.1.0 5c4d4ed6 WEX-WEI
+GENERATION TIME      =        0.000 SECONDS      4 MB  49.4.0 6fb2fe8b WEX-WEI
                L O O P S                  s 2
 
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:11:02 Page 18
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:37:07 Page 18
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Solution Report     SOLVE vyroba Using LP From line 110
+Solution Report     SOLVE vyroba Using LP From line 133
 
 
                S O L V E      S U M M A R Y
 
      MODEL   vyroba              OBJECTIVE  z
      TYPE    LP                  DIRECTION  MAXIMIZE
-     SOLVER  CPLEX               FROM LINE  110
+     SOLVER  CPLEX               FROM LINE  133
 
 **** SOLVER STATUS     1 Normal Completion
 **** MODEL STATUS      1 Optimal
-**** OBJECTIVE VALUE            19716.4948
+**** OBJECTIVE VALUE            19491.5980
 
  RESOURCE USAGE, LIMIT          0.000 10000000000.000
  ITERATION COUNT, LIMIT         0    2147483647
-*** This solver runs with a demo license. No commercial use.
+*** This solver runs with a community license. No commercial use.
 --- GMO setup time: 0.00s
 --- GMO memory 0.50 Mb (peak 0.50 Mb)
 --- Dictionary memory 0.00 Mb
@@ -920,7 +955,7 @@ Solution Report     SOLVE vyroba Using LP From line 110
 
 
 Optimal solution found
-Objective:        19716.494845
+Objective:        19491.598017
 
 
                            LOWER          LEVEL          UPPER         MARGINAL
@@ -940,47 +975,47 @@ Objective:        19716.494845
 
          LOWER          LEVEL          UPPER         MARGINAL
 
-1      1000.0000      3791.3402        +INF             .          
-2      1500.0000      3000.0000        +INF             .          
-3      4000.0000      4540.0000        +INF             .          
-4       800.0000      3016.7010        +INF             .          
+1      1000.0000      3743.0951        +INF             .          
+2      1500.0000      2983.5764        +INF             .          
+3      4000.0000      4560.0883        +INF             .          
+4       800.0000      2999.9766        +INF             .          
 
 ---- EQU omez2  
 
          LOWER          LEVEL          UPPER         MARGINAL
 
-1        -INF           49.2784       100.0000          .          
+1        -INF           39.1726       100.0000          .          
 2        -INF           40.0000       100.0000          .          
-3        -INF           47.4227       100.0000          .          
+3        -INF           57.2276       100.0000          .          
 
 ---- EQU omez3  
 
          LOWER          LEVEL          UPPER         MARGINAL
 
-1        20.0000        49.2784        +INF             .          
+1        20.0000        39.1726        +INF             .          
 2        40.0000        40.0000        +INF             .          
-3        20.0000        47.4227        +INF             .          
+3        20.0000        57.2276        +INF             .          
 
                            LOWER          LEVEL          UPPER         MARGINAL
 
----- VAR z                 -INF        19716.4948        +INF             .          
+---- VAR z                 -INF        19491.5980        +INF             .          
 
 ---- VAR x  
 
          LOWER          LEVEL          UPPER         MARGINAL
 
-1        49.2784        49.2784        49.2784      -165.0000      
+1        39.1726        39.1726        39.1726      -165.0000      
 2        40.0000        40.0000        40.0000      -200.0000      
-3        47.4227        47.4227        47.4227      -193.0000      
+3        57.2276        57.2276        57.2276      -193.0000      
 
 ---- VAR yp  
 
          LOWER          LEVEL          UPPER         MARGINAL
 
-1          .           208.6598      1000.0000          .          
-2          .       3.410605E-13      1000.0000          .          
+1          .           256.9049      1000.0000          .          
+2          .            16.4236      1000.0000          .          
 3          .              .          1000.0000       -10.0000      
-4          .              .          1000.0000         EPS         
+4          .             0.0234      1000.0000          .          
 
 ---- VAR ym  
 
@@ -988,27 +1023,27 @@ Objective:        19716.494845
 
 1          .              .          1000.0000       -20.0000      
 2          .              .          1000.0000       -30.0000      
-3          .            40.0000      1000.0000          .          
-4          .            16.7010      1000.0000          .          
+3          .            60.0883      1000.0000          .          
+4          .              .          1000.0000         EPS         
 
 
 **** REPORT SUMMARY :        0     NONOPT
                              0 INFEASIBLE
                              0  UNBOUNDED
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:11:02 Page 19
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:37:07 Page 19
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
 E x e c u t i o n
 
 
-----    111 VARIABLE z.L                   =    19716.495  
+----    134 VARIABLE z.L                   =    19491.598  
 
-----    111 VARIABLE x.L  
+----    134 VARIABLE x.L  
 
-1 49.278,    2 40.000,    3 47.423
+1 39.173,    2 40.000,    3 57.228
 
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:11:02 Page 20
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:37:07 Page 20
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Equation Listing    SOLVE vyroba Using LP From line 110
+Equation Listing    SOLVE vyroba Using LP From line 133
 
 
 ---- ucelfce  =E=  
@@ -1018,59 +1053,59 @@ ucelfce..  z - 145*x(1) - 150*x(2) - 147*x(3) + 40*ym(1) + 20*ym(2) + 10*ym(3) =
 
 ---- omez0  =E=  
 
-omez0(1)..  25*x(1) + 30*x(2) + 30*x(3) + yp(1) - ym(1) =E= 4000 ; (LHS = 4063.29896907216, INFES = 63.2989690721643 ****)
+omez0(1)..  25*x(1) + 30*x(2) + 30*x(3) + yp(1) - ym(1) =E= 4000 ; (LHS = 4153.04731861199, INFES = 153.047318611987 ****)
      
-omez0(2)..  25*x(1) + 20*x(2) + 22*x(3) + yp(2) - ym(2) =E= 3000 ; (LHS = 3075.25773195876, INFES = 75.2577319587631 ****)
+omez0(2)..  25*x(1) + 20*x(2) + 22*x(3) + yp(2) - ym(2) =E= 3000 ; (LHS = 3054.74538080216, INFES = 54.7453808021633 ****)
      
-omez0(3)..  30*x(1) + 35*x(2) + 32*x(3) + yp(3) - ym(3) =E= 4500 ; (LHS = 4355.87628865979, INFES = 144.123711340207 ****)
+omez0(3)..  30*x(1) + 35*x(2) + 32*x(3) + yp(3) - ym(3) =E= 4500 ; (LHS = 4346.37223974763, INFES = 153.627760252366 ****)
      
 REMAINING ENTRY SKIPPED
 
 
 ---- omez1  =G=  
 
-omez1(1)..  25*x(1) + 30*x(2) + 30*x(3) =G= 1000 ; (LHS = 3854.63917525773)
+omez1(1)..  25*x(1) + 30*x(2) + 30*x(3) =G= 1000 ; (LHS = 3896.14240648941)
      
-omez1(2)..  25*x(1) + 20*x(2) + 22*x(3) =G= 1500 ; (LHS = 3075.25773195876)
+omez1(2)..  25*x(1) + 20*x(2) + 22*x(3) =G= 1500 ; (LHS = 3038.32176656151)
      
-omez1(3)..  30*x(1) + 35*x(2) + 32*x(3) =G= 4000 ; (LHS = 4395.87628865979)
+omez1(3)..  30*x(1) + 35*x(2) + 32*x(3) =G= 4000 ; (LHS = 4406.46056782334)
      
 REMAINING ENTRY SKIPPED
 
 
 ---- omez2  =L=  
 
-omez2(1)..  x(1) =L= 100 ; (LHS = 49.2783505154639)
+omez2(1)..  x(1) =L= 100 ; (LHS = 39.1726002703921)
      
 omez2(2)..  x(2) =L= 100 ; (LHS = 40)
      
-omez2(3)..  x(3) =L= 100 ; (LHS = 47.4226804123711)
+omez2(3)..  x(3) =L= 100 ; (LHS = 57.2275799909869)
      
 
 ---- omez3  =G=  
 
-omez3(1)..  x(1) =G= 20 ; (LHS = 49.2783505154639)
+omez3(1)..  x(1) =G= 20 ; (LHS = 39.1726002703921)
      
 omez3(2)..  x(2) =G= 40 ; (LHS = 40)
      
-omez3(3)..  x(3) =G= 20 ; (LHS = 47.4226804123711)
+omez3(3)..  x(3) =G= 20 ; (LHS = 57.2275799909869)
      
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:11:02 Page 21
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:37:07 Page 21
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Column Listing      SOLVE vyroba Using LP From line 110
+Column Listing      SOLVE vyroba Using LP From line 133
 
 
 ---- z  
 
 z
-                (.LO, .L, .UP, .M = -INF, 19716.4948453608, +INF, 0)
+                (.LO, .L, .UP, .M = -INF, 19491.5980171248, +INF, 0)
         1       ucelfce
 
 
 ---- x  
 
 x(1)
-                (.LO, .L, .UP, .M = 49.2783505154639, 49.2783505154639, 49.2783505154639, -165)
+                (.LO, .L, .UP, .M = 39.1726002703921, 39.1726002703921, 39.1726002703921, -165)
      -145       ucelfce
        25       omez0(1)
        25       omez0(2)
@@ -1098,7 +1133,7 @@ x(2)
         1       omez3(2)
 
 x(3)
-                (.LO, .L, .UP, .M = 47.4226804123711, 47.4226804123711, 47.4226804123711, -193)
+                (.LO, .L, .UP, .M = 57.2275799909869, 57.2275799909869, 57.2275799909869, -193)
      -147       ucelfce
        30       omez0(1)
        22       omez0(2)
@@ -1115,11 +1150,11 @@ x(3)
 ---- yp  
 
 yp(1)
-                (.LO, .L, .UP, .M = 0, 208.659793814433, 1000, 0)
+                (.LO, .L, .UP, .M = 0, 256.904912122577, 1000, 0)
         1       omez0(1)
 
 yp(2)
-                (.LO, .L, .UP, .M = 0, 3.41060513164848E-13, 1000, 0)
+                (.LO, .L, .UP, .M = 0, 16.4236142406489, 1000, 0)
         1       omez0(2)
 
 yp(3)
@@ -1141,25 +1176,25 @@ ym(2)
        -1       omez0(2)
 
 ym(3)
-                (.LO, .L, .UP, .M = 0, 39.9999999999998, 1000, 0)
+                (.LO, .L, .UP, .M = 0, 60.0883280757098, 1000, 0)
        10       ucelfce
        -1       omez0(3)
 
 REMAINING ENTRY SKIPPED
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:11:02 Page 22
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:37:07 Page 22
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Range Statistics    SOLVE vyroba Using LP From line 110
+Range Statistics    SOLVE vyroba Using LP From line 133
 
 
 RANGE STATISTICS (ABSOLUTE NON-ZERO FINITE VALUES)
 
 RHS       [min, max] : [ 2.000E+01, 4.500E+03] - Zero values observed as well
-Bound     [min, max] : [ 4.000E+01, 1.000E+03] - Zero values observed as well
+Bound     [min, max] : [ 3.917E+01, 1.000E+03] - Zero values observed as well
 Matrix    [min, max] : [ 1.000E+00, 1.500E+02]
 
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:11:02 Page 23
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:37:07 Page 23
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Model Statistics    SOLVE vyroba Using LP From line 110
+Model Statistics    SOLVE vyroba Using LP From line 133
 
 
 LOOPS                                    s   3
@@ -1172,27 +1207,27 @@ BLOCKS OF VARIABLES           4     SINGLE VARIABLES           12
 NON ZERO ELEMENTS            45
 
 
-GENERATION TIME      =        0.000 SECONDS      4 MB  49.1.0 5c4d4ed6 WEX-WEI
+GENERATION TIME      =        0.000 SECONDS      4 MB  49.4.0 6fb2fe8b WEX-WEI
                L O O P S                  s 3
 
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:11:02 Page 24
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:37:07 Page 24
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Solution Report     SOLVE vyroba Using LP From line 110
+Solution Report     SOLVE vyroba Using LP From line 133
 
 
                S O L V E      S U M M A R Y
 
      MODEL   vyroba              OBJECTIVE  z
      TYPE    LP                  DIRECTION  MAXIMIZE
-     SOLVER  CPLEX               FROM LINE  110
+     SOLVER  CPLEX               FROM LINE  133
 
 **** SOLVER STATUS     1 Normal Completion
 **** MODEL STATUS      1 Optimal
-**** OBJECTIVE VALUE            18611.3402
+**** OBJECTIVE VALUE            19326.0460
 
  RESOURCE USAGE, LIMIT          0.016 10000000000.000
  ITERATION COUNT, LIMIT         0    2147483647
-*** This solver runs with a demo license. No commercial use.
+*** This solver runs with a community license. No commercial use.
 --- GMO setup time: 0.00s
 --- GMO memory 0.50 Mb (peak 0.50 Mb)
 --- Dictionary memory 0.00 Mb
@@ -1205,7 +1240,7 @@ Solution Report     SOLVE vyroba Using LP From line 110
 
 
 Optimal solution found
-Objective:        18611.340206
+Objective:        19326.045967
 
 
                            LOWER          LEVEL          UPPER         MARGINAL
@@ -1225,54 +1260,54 @@ Objective:        18611.340206
 
          LOWER          LEVEL          UPPER         MARGINAL
 
-1      1000.0000      3854.6392        +INF             .          
-2      1500.0000      3075.2577        +INF             .          
-3      4000.0000      4395.8763        +INF             .          
-4       800.0000      2730.3093        +INF             .          
+1      1000.0000      3896.1424        +INF             .          
+2      1500.0000      3038.3218        +INF             .          
+3      4000.0000      4406.4606        +INF             .          
+4       800.0000      2764.1136        +INF             .          
 
 ---- EQU omez2  
 
          LOWER          LEVEL          UPPER         MARGINAL
 
-1        -INF           49.2784       100.0000          .          
+1        -INF           39.1726       100.0000          .          
 2        -INF           40.0000       100.0000          .          
-3        -INF           47.4227       100.0000          .          
+3        -INF           57.2276       100.0000          .          
 
 ---- EQU omez3  
 
          LOWER          LEVEL          UPPER         MARGINAL
 
-1        20.0000        49.2784        +INF             .          
+1        20.0000        39.1726        +INF             .          
 2        40.0000        40.0000        +INF             .          
-3        20.0000        47.4227        +INF             .          
+3        20.0000        57.2276        +INF             .          
 
                            LOWER          LEVEL          UPPER         MARGINAL
 
----- VAR z                 -INF        18611.3402        +INF             .          
+---- VAR z                 -INF        19326.0460        +INF             .          
 
 ---- VAR x  
 
          LOWER          LEVEL          UPPER         MARGINAL
 
-1        49.2784        49.2784        49.2784      -355.0000      
+1        39.1726        39.1726        39.1726      -355.0000      
 2        40.0000        40.0000        40.0000      -250.0000      
-3        47.4227        47.4227        47.4227      -293.0000      
+3        57.2276        57.2276        57.2276      -293.0000      
 
 ---- VAR yp  
 
          LOWER          LEVEL          UPPER         MARGINAL
 
-1          .           145.3608      1000.0000          .          
+1          .           103.8576      1000.0000          .          
 2          .              .          1000.0000       -20.0000      
-3          .           104.1237      1000.0000          .          
-4          .           269.6907      1000.0000          .          
+3          .            93.5394      1000.0000          .          
+4          .           235.8864      1000.0000          .          
 
 ---- VAR ym  
 
          LOWER          LEVEL          UPPER         MARGINAL
 
 1          .              .          1000.0000       -40.0000      
-2          .            75.2577      1000.0000          .          
+2          .            38.3218      1000.0000          .          
 3          .              .          1000.0000       -10.0000      
 4          .              .          1000.0000         EPS         
 
@@ -1280,31 +1315,32 @@ Objective:        18611.340206
 **** REPORT SUMMARY :        0     NONOPT
                              0 INFEASIBLE
                              0  UNBOUNDED
-GAMS 49.1.0  5c4d4ed6 Feb 15, 2025          WEX-WEI x86 64bit/MS Windows - 04/29/25 19:11:02 Page 25
+GAMS 49.4.0  6fb2fe8b Apr 6, 2025           WEX-WEI x86 64bit/MS Windows - 04/30/25 20:37:07 Page 25
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
 E x e c u t i o n
 
 
-----    111 VARIABLE z.L                   =    18611.340  
+----    134 VARIABLE z.L                   =    19326.046  
 
-----    111 VARIABLE x.L  
+----    134 VARIABLE x.L  
 
-1 49.278,    2 40.000,    3 47.423
+1 39.173,    2 40.000,    3 57.228
 
 
 **** REPORT FILE SUMMARY
 
-out C:\projekt\TS\vysledky.txt
+out D:\gams\Project\TS\vysledky.txt
 
 
-EXECUTION TIME       =        0.156 SECONDS      4 MB  49.1.0 5c4d4ed6 WEX-WEI
+EXECUTION TIME       =        0.172 SECONDS      4 MB  49.4.0 6fb2fe8b WEX-WEI
 
 
-USER: GAMS Demo, for EULA and demo limitations see   G250131/0001CB-GEN
-      https://www.gams.com/latest/docs/UG%5FLicense.html         DC0000
+USER: Academic User                                  G250418+0003Ac-GEN
+      xskurl02@vutbr.cz                                       CLA109379
+      License for teaching and research at degree granting institutions
 
 
 **** FILE SUMMARY
 
-Input      C:\projekt\TS\TS_EV.gms
-Output     C:\projekt\TS\TS_EV.lst
+Input      D:\gams\Project\TS\TS_EV.gms
+Output     D:\gams\Project\TS\TS_EV.lst
