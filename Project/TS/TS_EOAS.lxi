@@ -1,0 +1,82 @@
+B 3 C o m p i l a t i o n
+B 129 Equation Listing    SOLVE vyroba Using LP From line 60
+D 132 ucelfceEO
+D 137 omez1AS
+D 148 omez2AS
+B 160 Column Listing      SOLVE vyroba Using LP From line 60
+E 163 z
+E 170 x
+E 257 yps
+E 273 yms
+B 293 Range Statistics    SOLVE vyroba Using LP From line 60
+B 304 Model Statistics    SOLVE vyroba Using LP From line 60
+B 317 Solution Report     SOLVE vyroba Using LP From line 60
+B 351 E x e c u t i o n
+I 353 z
+I 354 x
+B 362 Equation Listing    SOLVE verifikace Using LP From line 80
+D 365 ucelfce
+D 370 omez1
+D 381 omez2
+B 393 Column Listing      SOLVE verifikace Using LP From line 80
+E 396 z
+E 403 x
+E 445 yp
+E 461 ym
+B 481 Range Statistics    SOLVE verifikace Using LP From line 80
+B 492 Model Statistics    SOLVE verifikace Using LP From line 80
+B 510 Solution Report     SOLVE verifikace Using LP From line 80
+F 543 ucelfce
+F 545 omez1
+F 554 omez2
+G 565 z
+G 567 x
+G 575 yp
+G 584 ym
+B 599 E x e c u t i o n
+I 601 z
+I 602 x
+B 610 Equation Listing    SOLVE verifikace Using LP From line 80
+D 613 ucelfce
+D 618 omez1
+D 629 omez2
+B 641 Column Listing      SOLVE verifikace Using LP From line 80
+E 644 z
+E 651 x
+E 690 yp
+E 706 ym
+B 726 Range Statistics    SOLVE verifikace Using LP From line 80
+B 737 Model Statistics    SOLVE verifikace Using LP From line 80
+B 755 Solution Report     SOLVE verifikace Using LP From line 80
+F 788 ucelfce
+F 790 omez1
+F 799 omez2
+G 810 z
+G 812 x
+G 820 yp
+G 829 ym
+B 844 E x e c u t i o n
+I 846 z
+I 847 x
+B 855 Equation Listing    SOLVE verifikace Using LP From line 80
+D 858 ucelfce
+D 863 omez1
+D 874 omez2
+B 886 Column Listing      SOLVE verifikace Using LP From line 80
+E 889 z
+E 896 x
+E 935 yp
+E 951 ym
+B 971 Range Statistics    SOLVE verifikace Using LP From line 80
+B 982 Model Statistics    SOLVE verifikace Using LP From line 80
+B 1000 Solution Report     SOLVE verifikace Using LP From line 80
+F 1033 ucelfce
+F 1035 omez1
+F 1044 omez2
+G 1055 z
+G 1057 x
+G 1065 yp
+G 1074 ym
+B 1089 E x e c u t i o n
+I 1091 z
+I 1092 x

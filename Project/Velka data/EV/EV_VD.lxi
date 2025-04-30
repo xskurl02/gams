@@ -1,0 +1,77 @@
+B 3 C o m p i l a t i o n
+B 123 E x e c u t i o n
+I 123 as
+B 149 Equation Listing    SOLVE vyroba Using LP From line 41
+D 152 ucelfce
+D 157 omez0
+D 168 omez1
+D 179 omez2
+D 190 omez3
+B 202 Column Listing      SOLVE vyroba Using LP From line 41
+E 205 z
+E 212 x
+B 259 Range Statistics    SOLVE vyroba Using LP From line 41
+B 270 Model Statistics    SOLVE vyroba Using LP From line 41
+B 283 Solution Report     SOLVE vyroba Using LP From line 41
+F 316 ucelfce
+F 318 omez0
+F 327 omez1
+F 336 omez2
+F 345 omez3
+G 356 z
+G 358 x
+B 373 E x e c u t i o n
+I 375 z
+I 376 x
+B 384 Equation Listing    SOLVE vyroba Using LP From line 83
+D 387 ucelfce
+D 392 omez0
+D 403 omez1
+D 414 omez2
+D 425 omez3
+B 437 Column Listing      SOLVE vyroba Using LP From line 83
+E 440 z
+E 447 x
+B 494 Range Statistics    SOLVE vyroba Using LP From line 83
+B 505 Model Statistics    SOLVE vyroba Using LP From line 83
+B 523 Solution Report     SOLVE vyroba Using LP From line 83
+B 554 E x e c u t i o n
+I 556 z
+I 557 x
+B 565 Equation Listing    SOLVE vyroba Using LP From line 83
+D 568 ucelfce
+D 573 omez0
+D 584 omez1
+D 595 omez2
+D 606 omez3
+B 618 Column Listing      SOLVE vyroba Using LP From line 83
+E 621 z
+E 628 x
+B 675 Range Statistics    SOLVE vyroba Using LP From line 83
+B 686 Model Statistics    SOLVE vyroba Using LP From line 83
+B 704 Solution Report     SOLVE vyroba Using LP From line 83
+F 737 ucelfce
+F 739 omez0
+F 748 omez1
+F 757 omez2
+F 766 omez3
+G 777 z
+G 779 x
+B 794 E x e c u t i o n
+I 796 z
+I 797 x
+B 805 Equation Listing    SOLVE vyroba Using LP From line 83
+D 808 ucelfce
+D 813 omez0
+D 824 omez1
+D 835 omez2
+D 846 omez3
+B 858 Column Listing      SOLVE vyroba Using LP From line 83
+E 861 z
+E 868 x
+B 915 Range Statistics    SOLVE vyroba Using LP From line 83
+B 926 Model Statistics    SOLVE vyroba Using LP From line 83
+B 944 Solution Report     SOLVE vyroba Using LP From line 83
+B 975 E x e c u t i o n
+I 977 z
+I 978 x
