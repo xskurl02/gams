@@ -57,8 +57,10 @@ model vyroba / ucelfceEO, omez1AS, omez2AS /;
 model verifikace / ucelfce, omez1,omez2 /;
 yp.UP(i) = 100;
 ym.UP(i) = 100;
-solve vyroba maximizing z using LP;
-display z.L, x.L;
+yps.UP(i,s) = 100;
+yms.UP(i,s) = 100;
+
+
 file out / "vysledky.txt" /;
 put out;
 put "Vysledky a vstupy:" /;
@@ -73,6 +75,27 @@ loop(i, loop(j, put "a(" , i.tl:0 , "," , j.tl:0 , ")":10;););
 loop(i, put " qp(", i.TL:1, ")":11;);
 loop(i, put " qm(", i.TL:1, ")":11;);
 put /;
+
+solve vyroba maximizing z using LP;
+display z.L, x.L;
+
+If((vyroba.modelstat EQ 4) OR (vyroba.modelstat EQ 19), zEOASmax(s) = -INF;);
+xEOASmax(j,s) = x.L(j);
+
+put "EOAS", "      ", vyroba.modelstat:5:0, vyroba.solvestat:5:0, z.L:7:2;
+loop(j, put x.L(j):7:2;);
+loop(s, put @41;
+  loop(i, put yps.L(i,s):7:2;);
+  loop(i, put yms.L(i,s):7:2;);
+  loop(i, loop(j, put as(i,j,s):7:2;); );
+  loop(i, put qps(i,s):6:2;);
+  loop(i, put qms(i,s):6:2;);
+  put /;
+);
+
+x.Lo(j) = x.L(j);
+x.Up(j) = x.L(j);
+  
 loop(s,
     a(i,j) = as(i,j,s);
     qp(i) = qps(i,s);

@@ -51,8 +51,7 @@ omez2AS(i,s)..         sum(j, as(i,j,s) * x(j) ) =G= b_DOWN(i);
 
 model vyroba / ucelfceEO, omez1AS, omez2AS /;
 model verifikace / ucelfce, omez1,omez2 /;
-solve vyroba maximizing z using LP;
-display z.L, x.L;
+
 *---------------------------------------------------------------------------
 *  >>> neatly formatted output file  <<<
 *  https://www.youtube.com/watch?v=erG5GmNWbv8
@@ -77,7 +76,7 @@ solve vyroba maximizing z using LP;
 display z.L, x.L;
 
 * ---------- Expected-value row (base LP) ----------
-put "EV":3, "":1, vyroba.modelstat:7:0, vyroba.solvestat:7:0, z.L:12:2;
+put "EOAS":4, vyroba.modelstat:7:0, vyroba.solvestat:7:0, z.L:12:2;
 loop(j,
     put x.L(j):10:2;
     put "":2
