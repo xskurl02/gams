@@ -38,8 +38,7 @@ omez1(i)..          sum( j,a(i,j) * x(j)) =G= b_DOWN(i);
 omez2(j)..          x(j) =L= x_UP(j);
 omez3(j)..          x(j) =G= x_DOWN(j);
 model vyroba / ucelfce, omez0, omez1, omez2, omez3 /;
-solve vyroba maximizing z using LP;
-display z.L, x.L;
+
 file out / "vysledky.txt" /;
 put out;
 put "Vysledky a vstupy:" /;
@@ -52,6 +51,12 @@ loop(j, put "x_UP(" , j.tl:0 , ")":10;);
 loop(j, put "x_DN(" , j.tl:0 , ")":10;);
 loop(i, loop(j, put "a(" , i.tl:0 , "," , j.tl:0 , ")":10;););
 put /;
+
+a(i,j) = sum(s, p(s) * as(i,j,s));
+
+solve vyroba maximizing z using LP;
+display z.L, x.L;
+
 * ---------- Expected-value row (base LP) ----------
 put "EV":3, "":1, vyroba.modelstat:7:0, vyroba.solvestat:7:0, z.l:12:2;
 loop(j,
@@ -107,8 +112,7 @@ loop(s,
 * ---------- risk measures ----------
 EzEV   = sum(s,p(s) * zEVmax(s) );
 put "EzEV   = ", EzEV:12:2 /;
-If(EzEV GT -INF,varzEV = sum(s,p(s) * zEVmax(s) * zEVmax(s) ) - EzEV * EzEV;);
-If(EzEV EQ -INF,varzEV = UNDF;);
+varzEV = sum(s,p(s) * zEVmax(s) * zEVmax(s) ) - EzEV * EzEV;
 put "varzEV = ", varzEV:12:2 /;
 szEV   = sqrt(varzEV);
 put "stdzEV = ", szEV:12:2 /;
