@@ -61,19 +61,26 @@ yps.UP(i,s) = 100;
 yms.UP(i,s) = 100;
 
 
-file out / "vysledky.txt" /;
+file out / "vysledkyEOAS_TS.html" /;
 put out;
-put "Vysledky a vstupy:" /;
-put "==================" / /;
-put "s":3, "p(s)":6, "opt?":7, "num?":7, "z_max":12;
-loop(j, put "x(" , j.tl:0 , ")":10;);
-loop(i, put "b_UP(" , i.tl:0 , ")":10;);
-loop(i, put "b_DN(" , i.tl:0 , ")":10;);
-loop(j, put "x_UP(" , j.tl:0 , ")":10;);
-loop(j, put "x_DN(" , j.tl:0 , ")":10;);
-loop(i, loop(j, put "a(" , i.tl:0 , "," , j.tl:0 , ")":10;););
-loop(i, put " qp(", i.TL:1, ")":11;);
-loop(i, put " qm(", i.TL:1, ")":11;);
+put "Vysledky a vstupy:<br>" /;
+put "==================<br>" / /;
+put "<table>";
+put "<tr>";
+put "<th>s</th>",
+    "<th>p(s)</th>",
+    "<th>opt?</th>",
+    "<th>num?</th>",
+    "<th>z_max</th>";
+loop(j, put "<th>x(",j.tl:0,")</th>";);
+loop(i, put "<th>b_UP(",i.tl:0,")</th>":10;);
+loop(i, put "<th>b_DN(",i.tl:0,")</th>":10;);
+loop(j, put "<th>x_UP(",j.tl:0,")</th>":10;);
+loop(j, put "<th>x_DN(",j.tl:0,")</th>":10;);
+loop(i, loop(j, put "<th>a(",i.tl:0,",",j.tl:0,")</th>":10;););
+loop(i, put "<th>qp(",i.TL:1,")</th>":11;);
+loop(i, put "<th>qm(",i.TL:1,")</th>":11;);
+put "</tr>";
 put /;
 
 solve vyroba maximizing z using LP;
@@ -81,16 +88,22 @@ display z.L, x.L;
 
 If((vyroba.modelstat EQ 4) OR (vyroba.modelstat EQ 19), zEOASmax(s) = -INF;);
 xEOASmax(j,s) = x.L(j);
+put "</tr>";
+put "<td>EOAS</td>",
+    "<td></td>",
+    "<td>"vyroba.modelstat:5:0"</td>",
+    "<td>"vyroba.solvestat:5:0"</td>",
+    "<td>"z.L:7:2"</td>";
+loop(j, put "<td>"x.L(j):7:2"</td>";);
 
-put "EOAS", "      ", vyroba.modelstat:5:0, vyroba.solvestat:5:0, z.L:7:2;
-loop(j, put x.L(j):7:2;);
-loop(s, put @41;
-  loop(i, put yps.L(i,s):7:2;);
-  loop(i, put yms.L(i,s):7:2;);
-  loop(i, loop(j, put as(i,j,s):7:2;); );
-  loop(i, put qps(i,s):6:2;);
-  loop(i, put qms(i,s):6:2;);
-  put /;
+loop(s,
+    put "<tr>";
+    loop(i, put "<td>"yps.L(i,s):7:2"</td>";);
+    loop(i, put "<td>"yms.L(i,s):7:2"</td>";);
+    loop(i, loop(j, put "<td>"as(i,j,s):7:2"</td>";); );
+    loop(i, put "<td>"qps(i,s):6:2"</td>";);
+    loop(i, put "<td>"qms(i,s):6:2"</td>";);
+    put "</tr>";
 );
 
 x.Lo(j) = x.L(j);
@@ -106,18 +119,8 @@ loop(s,
     If(vyroba.modelstat EQ 4, zEOASmax(s) = -INF;);
     xEOASmax(j,s) = x.L(j);
     put s.tl:3, p(s):5:3, vyroba.modelstat:3:0, vyroba.solvestat:7:0, z.L:11:2;
-    loop(j,
-        put x.L(j):11:2;
-        put "":1;
-        put$(ord(j)=1) "":1;
-        put$(ord(j)=2) "":1;
-    );
-    loop(i,
-        put b_UP(i):14:2;
-        put$(ord(i)=1) "":2;
-        put$(ord(i)=2) "":2;
-        put$(ord(i)=3) "":2;
-    );
+    loop(j,put x.L(j):11:2;);
+    loop(i,put b_UP(i):14:2;);
     loop(i, put b_DOWN(i):16:2;);
     loop(j, put x_UP(j):16:2;);
     loop(j, put x_DOWN(j):16:2;);
@@ -133,11 +136,11 @@ loop(s,
 );
 
 EzEOAS   = sum(s,p(s) * zEOASmax(s) );
-put "zTSmax   = ", EzEOAS:10:2 /;
 If(EzEOAS GT -INF,
   varzEOAS = sum(s,p(s) * zEOASmax(s) * zEOASmax(s) ) - EzEOAS * EzEOAS;);
 If(EzEOAS EQ -INF,
   varzEOAS = UNDF;);
-put "varzEOAS = ", varzEOAS:10:2 /;
 szEOAS   = sqrt(varzEOAS);
-put "stdzEOAS = ", szEOAS:10:2 /;
+put "zTSmax   = ", EzEOAS:10:2 /;
+put "varzEOAS = ", varzEOAS:10:2 /;
+put "sthzEOAS = ", szEOAS:10:2 /;

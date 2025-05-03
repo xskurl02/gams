@@ -52,22 +52,28 @@ model vyroba / ucelfce, omez0, omez1, omez2, omez3 /;
 yp.UP(i) = 100;
 ym.UP(i) = 100;
 
-file out / "vysledky.txt" /;
+file out / "vysledkyWS_TS.html" /;
 put out;
-put "Vysledky a vstupy:" /;
-put "==================" / /;
-put "s":3, "p(s)":6, "opt?":7, "num?":7, "z_max":12;
-loop(j, put "x(" , j.tl:0 , ")":10;);
-loop(i, put "b_UP(" , i.tl:0 , ")":10;);
-loop(i, put "b_DN(" , i.tl:0 , ")":10;);
-loop(i, put "Yp(" , i.tl:0 , ")":10;);
-loop(i, put "Ym(" , i.tl:0 , ")":10;);
-loop(j, put "x_UP(" , j.tl:0 , ")":10;);
-loop(j, put "x_DN(" , j.tl:0 , ")":10;);
-loop(i, loop(j, put "a(" , i.tl:0 , "," , j.tl:0 , ")":10;););
-loop(i, put " qp(", i.TL:1, ")":11;);
-loop(i, put " qm(", i.TL:1, ")":11;);
-put /;
+put "Vysledky a vstupy:<br>" /;
+put "==================<br>" /;
+put "<table>";
+put "<tr>";
+put "<th>s</th>",
+    "<th>p(s)</th>",
+    "<th>opt?</th>",
+    "<th>num?</th>",
+    "<th>z_max</th>";
+loop(j,put "<th>x(",j.tl:0,")</th>";);
+loop(i,put "<th>b_UP(",i.tl:0,")</th>";);
+loop(i,put "<th>b_DN(",i.tl:0,")</th>";);
+loop(i,put "<th>Yp(",i.tl:0,")</th>";);
+loop(i,put "<th>Ym(",i.tl:0,")</th>";);
+loop(j,put "<th>x_UP(",j.tl:0,")</th>";);
+loop(j,put "<th>x_DN(",j.tl:0,")</th>";);
+loop(i,loop(j, put "<th>a(",i.tl:0,",",j.tl:0,")</th>";););
+loop(i,put "<th>qp(",i.TL:1,")</th>";);
+loop(i,put "<th>qm(",i.TL:1,")</th>";);
+put "</tr>";
 
 loop(s,
     a(i,j) = as(i,j,s);
@@ -79,52 +85,33 @@ loop(s,
     
     zWSmax(s) = z.L;
     If(vyroba.modelstat EQ 4, zWSmax(s) = -INF;);
-    
     xWSmax(j,s) = x.L(j);
-    put s.tl:3, p(s):5:3, vyroba.modelstat:3:0, vyroba.solvestat:7:0, z.L:11:2;
-    loop(j,
-        put x.L(j):10:2;
-        put "":2;
-        put$(ord(j)=1) "":1;
-        put$(ord(j)=2) "":1;
-    );
-    loop(i,
-        put b_UP(i):14:2;
-        put$(ord(i)=1) "":3;
-        put$(ord(i)=2) "":3;
-        put$(ord(i)=3) "":3;
-    );
-    loop(i,put b_DOWN(i):16:2;);
-    loop(i,put yp.L(i):14:2;);
-    loop(i,put ym.L(i):14:2;);
-    loop(j,
-        put x_UP(j):15:2;
-        put$(ord(j)=1) "":1;
-        put$(ord(j)=2) "":1;
-        );
-    loop(j, put x_DOWN(j):15:2;
-        put$(ord(j)=1) "":1;
-        put$(ord(j)=2) "":1;
-    );
-    put "":1
-    loop(i, loop(j, put a(i,j):15:2;););
-    loop(i,
-        put qp(i):15:2;
-        put$(ord(i)=1) "":1;
-        put$(ord(i)=2) "":1;
-        put$(ord(i)=3) "":1;
-    );
-    put "":1
-    loop(i,put qm(i):16:2;);
-    put /;
+    put "<tr>";
+    put "<td>"s.tl"</td>",
+        "<td>"p(s)"</td>",
+        "<td>"vyroba.modelstat"</td>",
+        "<td>"vyroba.solvestat"</td>",
+        "<td>"z.L"</td>";
+    loop(j,put "<td>"x.L(j)"</td>";);
+    loop(i,put "<td>"b_UP(i)"</td>";);
+    loop(i,put "<td>"b_DOWN(i)"</td>";);
+    loop(i,put "<td>"yp.L(i)"</td>";);
+    loop(i,put "<td>"ym.L(i)"</td>";);
+    loop(j,put "<td>"x_UP(j)"</td>";);
+    loop(j,put "<td>"x_DOWN(j)"</td>";);
+    loop(i,loop(j, put "<td>"a(i,j)"</td>";););
+    loop(i,put "<td>"qp(i)"</td>";);
+    loop(i,put "<td>"qm(i)"</td>";);
+    put "</tr>";
 );
-
-EzWS   = sum(s,p(s) * zWSmax(s) );
-put "EzWS=", EzWS:12:2 /;
+put "</table>";
+put "<br>";
+EzWS=sum(s,p(s) * zWSmax(s) );
 If((vyroba.modelstat EQ 1) OR (vyroba.modelstat EQ 2),
-    varzWS = sum(s,p(s) * zWSmax(s) * zWSmax(s) ) - EzWS * EzWS;);
+    varzWS=sum(s,p(s) * zWSmax(s) * zWSmax(s) ) - EzWS * EzWS;);
 If(vyroba.modelstat EQ 4,
-    varzWS = UNDF;);
-put "varzWS=", varzWS:10:2 /;
-szWS   = sqrt(varzWS);
-put "stdzWS=", szWS:10:2 /;
+    varzWS=UNDF;);
+szWS=sqrt(varzWS);
+put "EzWS=",EzWS,"<br>"/;
+put "varzWS=",varzWS,"<br>"/;
+put "stdzWS=",szWS/;

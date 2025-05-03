@@ -6,7 +6,7 @@ set s /1 * 3/; #scenare s
 scalar EzEOAS, varzEOAS, szEOAS;
 parameter
     b_UP /1 4000,2 3000,3 4500,4 3000/, #Horna hranica suctu v riadku
-    b_DOWN /1 1000,2 1500,3 4300,4 800/, #Dolna hranica suctu v riadku
+    b_DOWN /1 1000,2 1500,3 4000,4 800/, #Dolna hranica suctu v riadku
     x_UP /1 100,2 100,3 100/, # Horna hranica x
     x_DOWN /1 20,2 40,3 20/, # Dolna hranica x
     p(s) /1 0.35,2 0.35,3 0.3/,

@@ -60,9 +60,10 @@ loop(i,put "<th>b_UP(",i.tl:0,")</th>";);
 loop(i,put "<th>b_DN(",i.tl:0,")</th>";);
 loop(j,put "<th>x_UP(",j.tl:0,")</th>";);
 loop(j,put "<th>x_DN(",j.tl:0,")</th>";);
-loop(i,loop(j,put "<th>a(",i.tl:0,",",j.tl:0,")</th>":10;););
+loop(i,loop(j,put "<th>a(",i.tl:0,",",j.tl:0,")</th>";););
 put "</tr>"
 put ""
+
 loop(s,
     a(i,j) = as(i,j,s)
     solve vyroba maximizing z using LP;
