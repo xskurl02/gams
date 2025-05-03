@@ -35,99 +35,78 @@ table a(i,j)
 Variable z;
 Positive Variables x(j);
 Equations ucelfce, omez0(i), omez1(i), omez2(j), omez3(j);
-ucelfce..           z =E= sum( j, c(j)*x(j) );
-omez0(i)..          sum( j, a(i,j) * x(j) ) =L= b_UP(i);
-omez1(i)..          sum( j, a(i,j) * x(j) ) =G= b_DOWN(i);
+ucelfce..           z =E= sum(j,c(j)*x(j));
+omez0(i)..          sum(j,a(i,j)*x(j)) =L= b_UP(i);
+omez1(i)..          sum(j,a(i,j)*x(j)) =G= b_DOWN(i);
 omez2(j)..          x(j) =L= x_UP(j);
-omez3(j)..          x(j) =G= x_DOWN(j); #X.LOW(j) = X(j) zdrojak IS -> Zrovnat si tabulator, dvojstupnove prohlednut si tie smesi, ja za jaku dodoatecnu cenu umoznumujem posunutie Ipsilon
+omez3(j)..          x(j) =G= x_DOWN(j);
 model vyroba / ucelfce, omez0, omez1, omez2, omez3 /;
-solve vyroba maximizing z using LP;
-display z.L, x.L;
 *---------------------------------------------------------------------------
 *  >>> neatly formatted output file  <<<
-*  https://www.youtube.com/watch?v=erG5GmNWbv8
 *---------------------------------------------------------------------------
-file out / "vysledky.txt" /;
+file out / "vysledkyEV.html" /;
 put out;
-put "Vysledky a vstupy:" /;
-put "==================" / /;
-
+put "Vysledky a vstupy:<br>" /;
+put "==================<br>" /;
+put "<table>";
+put "<tr>";
 * ---------- column headings ----------
-put "s":3, "p(s)":6, "opt?":7, "num?":7, "z_max":12;
-loop(j, put "x(" , j.tl:0 , ")":10;);
-loop(i, put "b_UP(" , i.tl:0 , ")":10;);
-loop(i, put "b_DN(" , i.tl:0 , ")":10;);
-loop(j, put "x_UP(" , j.tl:0 , ")":10;);
-loop(j, put "x_DN(" , j.tl:0 , ")":10;);
-loop(i, loop(j, put "a(" , i.tl:0 , "," , j.tl:0 , ")":10;););
+put "<th>s</th>","<th>p(s)</th>","<th>opt?</th>","<th>num?</th>","<th>z_max</th>";
+loop(j,put "<th>x(",j.tl:0,")</th>";);
+loop(i,put "<th>b_UP(",i.tl:0,")</th>";);
+loop(i,put "<th>b_DN(",i.tl:0,")</th>";);
+loop(j,put "<th>x_UP(",j.tl:0,")</th>";);
+loop(j,put "<th>x_DN(",j.tl:0,")</th>";);
+loop(i,loop(j,put "<th>a(",i.tl:0,",",j.tl:0,")</th>";););
 put /;
-
+put "</tr>";
 a(i,j) = sum(s, p(s) * as(i,j,s));
 solve vyroba maximizing z using LP;
 display z.L, x.L;
-
 * ---------- Expected-value row (base LP) ----------
-put "EV":3, "":1, vyroba.modelstat:7:0, vyroba.solvestat:7:0, z.l:12:2;
-loop(j,
-    put x.l(j):10:2;
-    put "":2
-    put$(ord(j)=1) "":1;
-    put$(ord(j)=2) "":1;
-);
-loop(i,
-    put b_UP(i):13:2;
-    put$(ord(i)=1) "":3;
-    put$(ord(i)=2) "":3;
-    put$(ord(i)=3) "":3;
-);
-
-loop(i,put b_DOWN(i):16:2;);
-
-loop(j, put x_UP(j):16:2;);
-loop(j, put x_DOWN(j):16:2;);
-loop(i, loop(j,put a(i,j):15:2;););
-put /;
-put /;
+put "<tr>";
+put "<td>EV</td>",
+    "<td></td>",
+    "<td>"vyroba.modelstat"</td>",
+    "<td>"vyroba.solvestat"</td>",
+    "<td>"z.l"</td>";
+loop(j,put "<td>"x.l(j)"</td>";);
+loop(i,put "<td>"b_UP(i)"</td>";);
+loop(i,put "<td>"b_DOWN(i)"</td>";);
+loop(j,put "<td>"x_UP(j)"</td>";);
+loop(j,put "<td>"x_DOWN(j)"</td>";);
+loop(i,loop(j,put "<td>"a(i,j)"</td>";););
+put "</tr>";
 #To Find the current value of X and cap the fucker
 x.Lo(j) = x.L(j);
 x.Up(j) = x.L(j);
 loop(s,
     a(i,j) = as(i,j,s);
-    
     solve vyroba maximizing z using LP;
     display z.L, x.L;
-    
     zEVmax(s) = z.L;
-    
-    if ((vyroba.modelstat = 4) or (vyroba.modelstat = 19),
-        zEVmax(s) = -INF
-    );
-    
-    put s.tl:3, p(s):5:3, vyroba.modelstat:3:0, vyroba.solvestat:7:0, zEVmax(s):12:2;
-    loop(j,
-        put x.l(j):10:2;
-        put "":2;
-        put$(ord(j)=1) "":1;
-        put$(ord(j)=2) "":1;
-    );
-    loop(i,
-        put b_UP(i):13:2;
-        put$(ord(i)=1) "":3;
-        put$(ord(i)=2) "":3;
-        put$(ord(i)=3) "":3;
-        );
-    loop(i, put b_DOWN(i):16:2;);
-    loop(j, put x_UP(j):16:2;);
-    loop(j, put x_DOWN(j):16:2;);
-    loop(i, loop(j, put a(i,j):15:2;););
-    put /;
+    if ((vyroba.modelstat = 4) or (vyroba.modelstat = 19),zEVmax(s) = -INF);
+    put "<tr>"
+    put "<td>"s.tl"</td>",
+        "<td>"p(s)"</td>",
+        "<td>"vyroba.modelstat"</td>",
+        "<td>"vyroba.solvestat"</td>",
+        "<td>"zEVmax(s)"</td>";
+    loop(j,put "<td>"x.l(j)"</td>";);
+    loop(i,put "<td>"b_UP(i)"</td>";);
+    loop(i,put "<td>"b_DOWN(i)"</td>";);
+    loop(j,put "<td>"x_UP(j)"</td>";);
+    loop(j,put "<td>"x_DOWN(j)"</td>";);
+    loop(i,loop(j,put "<td>"a(i,j)"</td>";););
+    put "</tr>"
 );
-put /;
+put "</table>";
+put "<br>";
 * ---------- risk measures ----------
-EzEV   = sum(s,p(s) * zEVmax(s) );
-put "EzEV   = ", EzEV:12:2 /;
-If(EzEV GT -INF,varzEV = sum(s,p(s) * zEVmax(s) * zEVmax(s) ) - EzEV * EzEV;);
+EzEV= sum(s,p(s)*zEVmax(s));
+If(EzEV GT -INF,varzEV = sum(s,p(s)*zEVmax(s)*zEVmax(s))-EzEV*EzEV;);
 If(EzEV EQ -INF,varzEV = UNDF;);
-put "varzEV = ", varzEV:12:2 /;
-szEV   = sqrt(varzEV);
-put "stdzEV = ", szEV:12:2 /;
+szEV=sqrt(varzEV);
+put "EzEV=",EzEV,"<br>"/;
+put "varzEV=",varzEV,"<br>"/;
+put "stdzEV=",szEV/;

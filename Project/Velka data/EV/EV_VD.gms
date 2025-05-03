@@ -33,8 +33,8 @@ Variable z;
 Positive Variables x(j);
 Equations ucelfce, omez0(i), omez1(i), omez2(j), omez3(j);
 ucelfce..           z =E= sum(j,c(j) * x(j));
-omez0(i)..          sum( j,a(i,j) * x(j)) =L= b_UP(i);
-omez1(i)..          sum( j,a(i,j) * x(j)) =G= b_DOWN(i);
+omez0(i)..          sum(j,a(i,j) * x(j)) =L= b_UP(i);
+omez1(i)..          sum(j,a(i,j) * x(j)) =G= b_DOWN(i);
 omez2(j)..          x(j) =L= x_UP(j);
 omez3(j)..          x(j) =G= x_DOWN(j);
 model vyroba / ucelfce, omez0, omez1, omez2, omez3 /;
@@ -95,13 +95,13 @@ loop(s,
         put "":1;
         put$(ord(j)=1) "":1;
         put$(ord(j)=2) "":1;
-    );
+);
     loop(i,
         put b_UP(i):14:2;
         put$(ord(i)=1) "":2;
         put$(ord(i)=2) "":2;
         put$(ord(i)=3) "":2;
-    );
+);
     loop(i, put b_DOWN(i):16:2;);
     loop(j, put x_UP(j):16:2;);
     loop(j, put x_DOWN(j):16:2;);
