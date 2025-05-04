@@ -51,18 +51,23 @@ put "==================<br>" /;
 put "<table>";
 put "<tr>";
 * ---------- column headings ----------
-put "<th>s</th>","<th>p(s)</th>","<th>opt?</th>","<th>num?</th>","<th>z_max</th>";
+put "<th>s</th>",
+    "<th>p(s)</th>",
+    "<th>opt?</th>",
+    "<th>num?</th>",
+    "<th>z_max</th>";
 loop(j,put "<th>x(",j.tl:0,")</th>";);
 loop(i,put "<th>b_UP(",i.tl:0,")</th>";);
 loop(i,put "<th>b_DN(",i.tl:0,")</th>";);
 loop(j,put "<th>x_UP(",j.tl:0,")</th>";);
 loop(j,put "<th>x_DN(",j.tl:0,")</th>";);
 loop(i,loop(j,put "<th>a(",i.tl:0,",",j.tl:0,")</th>";););
-put /;
 put "</tr>";
+
 a(i,j) = sum(s, p(s) * as(i,j,s));
 solve vyroba maximizing z using LP;
 display z.L, x.L;
+
 * ---------- Expected-value row (base LP) ----------
 put "<tr>";
 put "<td>EV</td>",
@@ -107,6 +112,7 @@ EzEV= sum(s,p(s)*zEVmax(s));
 If(EzEV GT -INF,varzEV = sum(s,p(s)*zEVmax(s)*zEVmax(s))-EzEV*EzEV;);
 If(EzEV EQ -INF,varzEV = UNDF;);
 szEV=sqrt(varzEV);
+put "<br>";
 put "EzEV=",EzEV,"<br>"/;
 put "varzEV=",varzEV,"<br>"/;
 put "stdzEV=",szEV/;

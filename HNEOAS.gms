@@ -54,23 +54,30 @@ model verifikace / ucelfce, omez1,omez2 /;
 *---------------------------------------------------------------------------
 file out / "vysledkyEOAS.html" /;
 put out;
+put "<head>";
+put '<link rel="stylesheet" href="styles.css">';
+put "</head>";
+* ---------- column headings ----------
 put "Vysledky a vstupy:<br>" /;
 put "==================<br>" /;
-put "<table>";
+put '<table id="EOAS1/2">';
 put "<tr>";
-* ---------- column headings ----------
-put "<th>s</th>","<th>p(s)</th>","<th>opt?</th>","<th>num?</th>","<th>z_max</th>";
+put "<th>s</th>",
+    "<th>p(s)</th>",
+    "<th>opt?</th>",
+    "<th>num?</th>",
+    "<th>z_max</th>";
 loop(j, put "<th>x(",j.tl:0,")</th>";);
 loop(i, put "<th>b_UP(",i.tl:0,")</th>";);
 loop(i, put "<th>b_DN(",i.tl:0,")</th>";);
 loop(j, put "<th>x_UP(",j.tl:0,")</th>";);
-loop(j, put "<th>x_DN(",j.tl:0,")</th>";);
-loop(i, loop(j, put "<th>a(" , i.tl:0 , "," , j.tl:0 , ")</th>";););
-put "</tr>";
+put "</tr>"
+put "<br>"
+
 #a(i,j) = sum(s, p(s) * as(i,j,s))
 solve vyroba maximizing z using LP;
 display z.L, x.L;
-* ---------- Expected-value row (base LP) ----------
+* ---------- Overall EOAS output(1/2) ----------
 put "<tr>";
 put "<td>EOAS</td>",
     "<td></td>",
@@ -81,12 +88,43 @@ loop(j,put "<td>"x.L(j)"</td>";);
 loop(i,put "<td>"b_UP(i)"</td>";);
 loop(i,put "<td>"b_DOWN(i)"</td>";);
 loop(j,put "<td>"x_UP(j)"</td>";);
+put "</tr>";
+put '</table id="EOAS1/2">';
+put "<br>"
+* ---------- column headings ----------
+put '<table id="EOAS2/2">';
+put "<tr>";
+loop(j, put "<th>x_DN(",j.tl:0,")</th>";);
+loop(j,put "<th>c(",j.tl:0,")</th>";);
+loop(i, loop(j, put "<th>a(",i.tl:0,",",j.tl:0,")</th>";););
+put "</tr>";
+* ---------- Overall EOAS output(2/2) ----------
+put "<tr>";
 loop(j,put "<td>"x_DOWN(j)"</td>";);
+loop(j,put "<td>"c(j)"</td>";);
 loop(i,loop(j,put "<td>"a(i,j)"</td>";););
 put "</tr>";
+put '</table id="EOAS2/2">';
+
 #To Find the current value of X and cap the fucker
 x.Lo(j) = x.L(j);
 x.Up(j) = x.L(j);
+
+* ---------- column headings ----------
+put '<table id="Scenarios">';
+put "<tr>";
+put "<th>s</th>",
+    "<th>p(s)</th>",
+    "<th>opt?</th>",
+    "<th>num?</th>",
+    "<th>z_max</th>";
+loop(j, put "<th>x(",j.tl:0,")</th>";);
+loop(i, put "<th>b_UP(",i.tl:0,")</th>";);
+loop(i, put "<th>b_DN(",i.tl:0,")</th>";);
+loop(j, put "<th>x_UP(",j.tl:0,")</th>";);
+put "</tr>"
+put "<br>"
+* ---------- Overall output(1/2) ----------
 loop(s,
     a(i,j) = as(i,j,s)
     solve verifikace maximizing z using LP;
@@ -103,11 +141,32 @@ loop(s,
     loop(i,put "<td>"b_UP(i)"</td>";);
     loop(i,put "<td>"b_DOWN(i)"</td>";);
     loop(j,put "<td>"x_UP(j)"</td>";);
-    loop(j,put "<td>"x_DOWN(j)"</td>";);
-    loop(i, loop(j, put "<td>"a(i,j)"</td>";););
 );
-put "</table>";
+put '</table id="Scenarios">';
 put "<br>";
+* ------------ column headings -------------
+put '<table id="Scenarios2">';
+put "<tr>";
+loop(j, put "<th>x_DN(",j.tl:0,")</th>";);
+loop(j,put "<th>c(",j.tl:0,")</th>";);
+loop(i, loop(j, put "<th>a(",i.tl:0,",",j.tl:0,")</th>";););
+put "</tr>";
+
+loop(s,
+    a(i,j) = as(i,j,s)
+    solve verifikace maximizing z using LP;
+    display z.L, x.L;
+    zEOASmax(s) = z.L;
+    if ((vyroba.modelstat = 4) or (vyroba.modelstat = 19),zEOASmax(s) = -INF);
+    put "<tr>";
+    loop(j,put "<td>"x_DOWN(j)"</td>";);
+    loop(j,put "<td>"c(j)"</td>";);
+    loop(i, loop(j, put "<td>"a(i,j)"</td>";););
+    put "</tr>";
+);
+put '</table id="Scenarios2">';
+put "<br>";
+
 * ---------- risk measures ----------
 EzEOAS=sum(s,p(s)*zEOASmax(s));
 If(EzEOAS GT -INF,varzEOAS = sum(s,p(s) * zEOASmax(s) * zEOASmax(s) ) - EzEOAS * EzEOAS;);

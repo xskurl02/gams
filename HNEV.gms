@@ -50,11 +50,11 @@ put "<head>";
 put '<link rel="stylesheet" href="styles.css">';
 put "</head>";
 
+* ---------- column headings ----------
 put "Vysledky a vstupy:<br>" /;
 put "==================<br>" /;
-put '<table id="members">';
+put '<table id="EV1/2">';
 put "<tr>";
-* ---------- column headings ----------
 put "<th>s</th>",
     "<th>p(s)</th>",
     "<th>opt?</th>",
@@ -64,19 +64,14 @@ loop(j,put "<th>x(",j.tl:0,")</th>";);
 loop(i,put "<th>b_UP(",i.tl:0,")</th>";);
 loop(i,put "<th>b_DN(",i.tl:0,")</th>";);
 loop(j,put "<th>x_UP(",j.tl:0,")</th>";);
-loop(j,put "<th>x_DN(",j.tl:0,")</th>";);
-loop(j,put "<th>c(",j.tl:0,")</th>";);
-loop(i,loop(j,put "<th>a(",i.tl:0,",",j.tl:0,")</th>";););
-put /;
 put "</tr>";
-
 
 a(i,j) = sum(s, p(s) * as(i,j,s));
 solve vyroba maximizing z using LP;
 display z.L, x.L;
 
+* ---------- Overall EV output(1/2) ----------
 
-* ---------- Expected-value row (base LP) ----------
 put "<tr>";
 put "<td>EV</td>",
     "<td></td>",
@@ -87,16 +82,46 @@ loop(j,put "<td>"x.l(j)"</td>";);
 loop(i,put "<td>"b_UP(i)"</td>";);
 loop(i,put "<td>"b_DOWN(i)"</td>";);
 loop(j,put "<td>"x_UP(j)"</td>";);
+put "</tr>";
+put '</table id="EV1/2">';
+put "<br>"
+* ------------ column headings -------------
+
+put '<table id="EV2/2">';
+put "<tr>";
+loop(j,put "<th>x_DN(",j.tl:0,")</th>";);
+loop(j,put "<th>c(",j.tl:0,")</th>";);
+loop(i,loop(j,put "<th>a(",i.tl:0,",",j.tl:0,")</th>";););
+put "</tr>";
+* ---------- Overall EV output(2/2) ----------
+
+put "<tr>";
 loop(j,put "<td>"x_DOWN(j)"</td>";);
 loop(j,put "<td>"c(j)"</td>";);
 loop(i,loop(j,put "<td>"a(i,j)"</td>";););
 put "</tr>";
+put '</table id="EV2/2">';
+
 #To Find the current value of X and cap the fucker
 x.Lo(j) = x.L(j);
 x.Up(j) = x.L(j);
-put '</table id="members">';
-put "</br>"
-put '<table id="members">';
+* ------------ column headings -------------
+
+put '<table id="Scenarios">';
+put "<tr>";
+put "<th>s</th>",
+    "<th>p(s)</th>",
+    "<th>opt?</th>",
+    "<th>num?</th>",
+    "<th>z_max</th>";
+loop(j,put "<th>x(",j.tl:0,")</th>";);
+loop(i,put "<th>b_UP(",i.tl:0,")</th>";);
+loop(i,put "<th>b_DN(",i.tl:0,")</th>";);
+loop(j,put "<th>x_UP(",j.tl:0,")</th>";);
+put "</tr>"
+put "<br>"
+* ---------- Overall output(1/2) ----------
+
 loop(s,
     a(i,j) = as(i,j,s);
     solve vyroba maximizing z using LP;
@@ -113,14 +138,33 @@ loop(s,
     loop(i,put "<td>"b_UP(i)"</td>";);
     loop(i,put "<td>"b_DOWN(i)"</td>";);
     loop(j,put "<td>"x_UP(j)"</td>";);
+    put "</tr>"
+);
+put '</table id="Scenarios">';
+* ------------ column headings -------------
+
+put '<table id="Scenarios2">';
+put "<tr>";
+loop(j,put "<th>x_DN(",j.tl:0,")</th>";);
+loop(j,put "<th>c(",j.tl:0,")</th>";);
+loop(i,loop(j,put "<th>a(",i.tl:0,",",j.tl:0,")</th>";););
+put "</tr>";
+put "<br>";
+* ---------- Overall output(2/2) ----------
+loop(s,
+    a(i,j) = as(i,j,s);
+    solve vyroba maximizing z using LP;
+    display z.L, x.L;
+    zEVmax(s) = z.L;
+    if ((vyroba.modelstat = 4) or (vyroba.modelstat = 19),zEVmax(s) = -INF);
+    put "<tr>"
     loop(j,put "<td>"x_DOWN(j)"</td>";);
     loop(j,put "<td>"c(j)"</td>";);
     loop(i,loop(j,put "<td>"a(i,j)"</td>";););
     put "</tr>"
 );
-put '<table id="members">';
+put '</table id="Scenarios2">';
 put "<br>";
-
 
 * ---------- risk measures ----------
 EzEV= sum(s,p(s)*zEVmax(s));
