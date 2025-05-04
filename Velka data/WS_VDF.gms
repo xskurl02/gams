@@ -1,15 +1,16 @@
 $eolCom #
 set i /1 * 4/; #stlpce x
-set j /1 * 3/; #riadky y
+set j /1 * 4/; #riadky y
 set s /1 * 3/; #scenare s
+alias(s,s1);
 scalar EzWS, varzWS, szWS;
 parameter
     b_UP /1 4000,2 3000,3 4500,4 3000/, #Horna hranica suctu v riadku
-    b_DOWN /1 1000,2 1500,3 4000,4 800/, #Dolna hranica suctu v riadku
-    x_UP /1 100,2 100,3 100/, # Horna hranica x
-    x_DOWN /1 20,2 40,3 20/, # Dolna hranica x
+    b_DOWN /1 1000,2 1500,3 3000,4 800/, #Dolna hranica suctu v riadku
+    x_UP /1 100,2 100,3 100,4 100/, # Horna hranica x
+    x_DOWN /1 20,2 40,3 20,4 20/, # Dolna hranica x
     p(s) /1 0.35,2 0.35,3 0.3/,
-    c(j) /1 145, 2 150, 3 147/,
+    c(j) /1 145, 2 150, 3 147, 4 148/,
     as(i,j,s)
     /1.1.1 30, 1.2.1 28, 1.3.1 27, 
     2.1.1 22, 2.2.1 23, 2.3.1 21,
@@ -31,6 +32,13 @@ table a(i,j)
 2   22  23  21
 3   31  34  34
 4   24  20  24;
+*-------------------------
+*Large Data Creation
+*-------------------------
+as(i,j,s) = uniform(10,30);
+p(s) = uniform(0,1);
+p(s) = p(s)/sum(s1,p(s1));
+*--------------------------
 Variable z;
 Positive Variables x(j);
 Equations ucelfce, omez0(i), omez1(i), omez2(j), omez3(j);
