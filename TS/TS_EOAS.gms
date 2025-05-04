@@ -61,9 +61,11 @@ ym.UP(i) = 0;
 yps.UP(i,s) = 1000;
 yms.UP(i,s) = 0;
 
-
 file out / "vysledkyEOAS_TS.html" /;
 put out;
+put "<head>";
+put '<link rel="stylesheet" href="styles.css">';
+put "</head>";
 put "Vysledky a vstupy:<br>" /;
 put "==================<br>" / /;
 put "<table>";
@@ -79,10 +81,6 @@ loop(i, put "<th>b_DN(",i.tl:0,")</th>";);
 loop(i, put "<th>Yp(",i.tl:0,")</th>";);
 loop(i, put "<th>Ym(",i.tl:0,")</th>";);
 loop(j, put "<th>x_UP(",j.tl:0,")</th>";);
-loop(j, put "<th>x_DN(",j.tl:0,")</th>";);
-loop(i, loop(j, put "<th>a(",i.tl:0,",",j.tl:0,")</th>";););
-loop(i, put "<th>qp(",i.TL:1,")</th>";);
-loop(i, put "<th>qm(",i.TL:1,")</th>";);
 put "</tr>";
 
 solve vyroba maximizing z using LP;
@@ -106,10 +104,6 @@ loop(s,
         loop(i,put "<td>"yp.L(i)"</td>";);
         loop(i,put "<td>"ym.L(i)"</td>";);
         loop(j,put "<td>"x_UP(j)"</td>";);
-        loop(j,put "<td>"x_DOWN(j)"</td>";);
-        loop(i, loop(j, put "<td>"as(i,j,s)"</td>";););
-        loop(i, put "<td>"qps(i,s)"</td>";);
-        loop(i, put "<td>"qms(i,s)"</td>";);
         put "</tr>";
     else
         put "<tr>";
@@ -126,18 +120,50 @@ loop(s,
         loop(i,put "<td>"yp.L(i)"</td>";);
         loop(i,put "<td>"ym.L(i)"</td>";);
         loop(j,put "<td>"x_UP(j)"</td>";);
+        put "</tr>";
+    );
+);
+put "</table>";
+put "<br>";
+put "<table>";
+put "<tr>";
+loop(j, put "<th>x_DN(",j.tl:0,")</th>";);
+loop(j,put "<th>c(",j.TL:1,")</th>";);
+loop(i, loop(j, put "<th>a(",i.tl:0,",",j.tl:0,")</th>";););
+loop(i, put "<th>qp(",i.TL:1,")</th>";);
+loop(i, put "<th>qm(",i.TL:1,")</th>";);
+put "</tr>";
+
+loop(s,
+        put "<tr>";
         loop(j,put "<td>"x_DOWN(j)"</td>";);
+        loop(j,put "<td>"c(j)"</td>";);
         loop(i, loop(j, put "<td>"as(i,j,s)"</td>";););
         loop(i, put "<td>"qps(i,s)"</td>";);
         loop(i, put "<td>"qms(i,s)"</td>";);
         put "</tr>";
-    );
-);
+);    
+put "</table>";
+put "<br>";
 
-put "</tr>";
 x.Lo(j) = x.L(j);
 x.Up(j) = x.L(j);
-  
+
+put "<table>";
+put "<tr>";
+put "<th>s</th>",
+    "<th>p(s)</th>",
+    "<th>opt?</th>",
+    "<th>num?</th>",
+    "<th>z_max</th>";
+loop(j, put "<th>x(",j.tl:0,")</th>";);
+loop(i, put "<th>b_UP(",i.tl:0,")</th>";);
+loop(i, put "<th>b_DN(",i.tl:0,")</th>";);
+loop(i, put "<th>Yp(",i.tl:0,")</th>";);
+loop(i, put "<th>Ym(",i.tl:0,")</th>";);
+loop(j, put "<th>x_UP(",j.tl:0,")</th>";);
+put "</tr>";
+
 loop(s,
     a(i,j) = as(i,j,s);
     qp(i) = qps(i,s);
@@ -161,7 +187,35 @@ loop(s,
     loop(i,put "<td>"yp.L(i)"</td>";);
     loop(i,put "<td>"ym.L(i)"</td>";);
     loop(j,put "<td>"x_UP(j)"</td>";);
+    put "</tr>";  
+);
+put "</table>";
+put "<br>";
+
+
+put "<table>";
+put "<tr>";
+loop(j, put "<th>x_DN(",j.tl:0,")</th>";);
+loop(j,put "<th>c(",j.TL:1,")</th>";);
+loop(i, loop(j, put "<th>a(",i.tl:0,",",j.tl:0,")</th>";););
+loop(i, put "<th>qp(",i.TL:1,")</th>";);
+loop(i, put "<th>qm(",i.TL:1,")</th>";);
+put "</tr>";
+
+loop(s,
+    a(i,j) = as(i,j,s);
+    qp(i) = qps(i,s);
+    qm(i) = qms(i,s);
+    
+    solve verifikace maximizing z using LP;
+    display z.L, x.L;
+    zEOASmax(s) = z.L;
+    
+    If(vyroba.modelstat EQ 4, zEOASmax(s) = -INF;);
+    xEOASmax(j,s) = x.L(j);
+    put "<tr>"
     loop(j,put "<td>"x_DOWN(j)"</td>";);
+    loop(j,put "<td>"c(j)"</td>";);
     loop(i,loop(j, put "<td>"a(i,j)"</td>";););
     loop(i,put "<td>"qp(i)"</td>";);
     loop(i,put "<td>"qm(i)"</td>";);
@@ -169,10 +223,21 @@ loop(s,
 );
 put "</table>";
 put "<br>";
+
 EzEOAS   = sum(s,p(s) * zEOASmax(s) );
 If(EzEOAS GT -INF,varzEOAS = sum(s,p(s) * zEOASmax(s) * zEOASmax(s) ) - EzEOAS * EzEOAS;);
 If(EzEOAS EQ -INF,varzEOAS = UNDF;);
 szEOAS   = sqrt(varzEOAS);
-put "zTSmax   = ", EzEOAS:10:2, "<br>" /;
-put "varzEOAS = ", varzEOAS:10:2,"<br>" /;
-put "sthzEOAS = ", szEOAS:10:2 /;
+
+put "<table>";
+put "<tr>";
+put "<th>zTSmax</th>";
+put "<th>varzEOAS</th>";
+put "<th>sthzEOAS</th>";
+put "</tr>";
+put "<tr>";
+put "<td>"EzEOAS"</td>";
+put "<td>"varzEOAS"</td>";
+put "<td>"szEOAS"</td>";
+put "</tr>";
+put "</table>";

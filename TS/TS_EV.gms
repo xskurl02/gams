@@ -53,30 +53,6 @@ model vyroba / ucelfce, omez0, omez1, omez2, omez3 /;
 yp.UP(i) = 1000;
 ym.UP(i) = 1000;
 
-file out / "vysledkyEV_TS.html" /;
-put out;
-put "Vysledky a vstupy:<br>"/;
-put "==================<br>"/;
-put "<table>";
-put "<tr>";
-put "<th>s</th>",
-    "<th>p(s)</th>",
-    "<th>opt?</th>",
-    "<th>num?</th>",
-    "<th>z_max</th>";
-loop(j, put "<th>x(",j.tl:0,")</th>";);
-loop(i, put "<th>b_UP(",i.tl:0,")</th>";);
-loop(i, put "<th>b_DN(",i.tl:0,")</th>";);
-loop(i, put "<th>Yp(",i.tl:0,")</th>";);
-loop(i, put "<th>Ym(",i.tl:0,")</th>";);
-loop(j, put "<th>x_UP(",j.tl:0,")</th>";);
-loop(j, put "<th>x_DN(",j.tl:0,")</th>";);
-loop(i, loop(j, put "<th>a(",i.tl:0,",",j.tl:0,")</th>";););
-loop(i, put "<th>qp(",i.TL:1,")</th>";);
-loop(i, put "<th>qm(",i.TL:1,")</th>";);
-put "</tr>"
-put /;
-
 a(i,j) = sum(s, p(s) * as(i,j,s));
 qp(i) = sum(s, p(s) * qps(i,s));
 qm(i) = sum(s, p(s) * qms(i,s));
@@ -87,26 +63,80 @@ display z.L, x.L;
 If((vyroba.modelstat EQ 4) OR (vyroba.modelstat EQ 19), zEVmax(s) = -INF;);
 xEVmax(j,s) = x.L(j);
 
+file out / "vysledkyEV_TS.html" /;
+put out;
+put "<head>";
+put '<link rel="stylesheet" href="styles.css">';
+put "</head>";
+put "Vysledky a vstupy:<br>"/;
+put "==================<br>"/;
+put "<table>";
+put "<tr>";
+put "<th>s</th>",
+    "<th>p(s)</th>",
+    "<th>opt?</th>",
+    "<th>num?</th>",
+    "<th>z_max</th>";
+loop(j, put "<th>x(",j.tl:0,")</th>";);
+loop(i, put "<th>Yp(",i.tl:0,")</th>";);
+loop(i, put "<th>Ym(",i.tl:0,")</th>";);
+loop(i, put "<th>b_UP(",i.tl:0,")</th>";);
+loop(i, put "<th>b_DN(",i.tl:0,")</th>";);
+put "</tr>";
+
 put "<tr>";
 put "<td>EV</td>",
     "<td></td>",
     "<td>"vyroba.modelstat"</td>",
     "<td>"vyroba.solvestat"</td>",
     "<td>"z.l"</td>";
-loop(j,put "<td>"x.l(j)"</td>";);
-loop(i,put "<td>"b_UP(i)"</td>";);
-loop(i,put "<td>"b_DOWN(i)"</td>";);
-loop(i,put "<td>"yp.L(i)"</td>";);
-loop(i,put "<td>"ym.L(i)"</td>";);
+    loop(j,put "<td>"x.l(j)"</td>";);
+    loop(i,put "<td>"yp.L(i)"</td>";);
+    loop(i,put "<td>"ym.L(i)"</td>";);
+    loop(i,put "<td>"b_UP(i)"</td>";);
+    loop(i,put "<td>"b_DOWN(i)"</td>";);
+put "</tr>";
+put "</table>";
+
+put "<table>";
+put "<br>";
+put "<tr>";
+loop(j, put "<th>x_UP(",j.tl:0,")</th>";);
+loop(j, put "<th>x_DN(",j.tl:0,")</th>";);
+loop(j, put "<th>c(",j.TL:1,")</th>";);
+loop(i, loop(j, put "<th>a(",i.tl:0,",",j.tl:0,")</th>";););
+loop(i, put "<th>qp(",i.TL:1,")</th>";);
+loop(i, put "<th>qm(",i.TL:1,")</th>";);
+put "</tr>";
+
+put "<tr>";
 loop(j,put "<td>"x_UP(j)"</td>";);
 loop(j,put "<td>"x_DOWN(j)"</td>";);
+loop(j,put "<td>"c(j)"</td>";);
 loop(i,loop(j,put "<td>"a(i,j)"</td>";););
 loop(i,put "<td>"qp(i)"</td>";);
 loop(i,put "<td>"qm(i)"</td>";);
 put "</tr>";
+put "</table>";
+
 #To Find the current value of X and cap the fucker
 x.Lo(j) = x.L(j);
 x.Up(j) = x.L(j);
+
+put "<table>";
+put "<tr>";
+put "<th>s</th>",
+    "<th>p(s)</th>",
+    "<th>opt?</th>",
+    "<th>num?</th>",
+    "<th>z_max</th>";
+loop(j, put "<th>x(",j.tl:0,")</th>";);
+loop(i, put "<th>Yp(",i.tl:0,")</th>";);
+loop(i, put "<th>Ym(",i.tl:0,")</th>";);
+loop(i, put "<th>b_UP(",i.tl:0,")</th>";);
+loop(i, put "<th>b_DN(",i.tl:0,")</th>";);
+put "</tr>";
+put "<br>";
 
 loop(s,
     a(i,j) = as(i,j,s);
@@ -126,12 +156,39 @@ loop(s,
         "<td>"vyroba.solvestat"</td>",
         "<td>"z.L"</td>";
     loop(j,put "<td>"x.L(j)"</td>";);
-    loop(i,put "<td>"b_UP(i)"</td>";);
-    loop(i,put "<td>"b_DOWN(i)"</td>";);
     loop(i,put "<td>"yp.L(i)"</td>";);
     loop(i,put "<td>"ym.L(i)"</td>";);
+    loop(i,put "<td>"b_UP(i)"</td>";);
+    loop(i,put "<td>"b_DOWN(i)"</td>";);
+    put "</tr>";
+);
+put "</table>";
+put "<br>";
+
+put "<table>";
+put "<tr>";
+loop(j, put "<th>x_UP(",j.tl:0,")</th>";);
+loop(j, put "<th>x_DN(",j.tl:0,")</th>";);
+loop(j, put "<th>c(",j.TL:1,")</th>";);
+loop(i, loop(j, put "<th>a(",i.tl:0,",",j.tl:0,")</th>";););
+loop(i, put "<th>qp(",i.TL:1,")</th>";);
+loop(i, put "<th>qm(",i.TL:1,")</th>";);
+put "</tr>";
+loop(s,
+    a(i,j) = as(i,j,s);
+    qp(i) = qps(i,s);
+    qm(i) = qms(i,s);
+    
+    solve vyroba maximizing z using LP;
+    display z.L, x.L;
+    
+    zEVmax(s) = z.L;
+    if ((vyroba.modelstat = 4) or (vyroba.modelstat = 19),zEVmax(s) = -INF);
+    xEVmax(j,s) = x.L(j);
+    put "<tr>"
     loop(j,put "<td>"x_UP(j)"</td>";);
     loop(j,put "<td>"x_DOWN(j)"</td>";);
+    loop(j,put "<td>"c(j)"</td>";);
     loop(i,loop(j, put "<td>"a(i,j)"</td>";););
     loop(i,put "<td>"qp(i)"</td>";);
     loop(i,put "<td>"qm(i)"</td>";);
@@ -139,10 +196,23 @@ loop(s,
 );
 put "</table>";
 put "<br>";
+
+
+* ---------- risk measures ----------
 EzEV=sum(s,p(s) * zEVmax(s) );
 If(EzEV GT -INF,varzEV = sum(s,p(s) * zEVmax(s) * zEVmax(s) ) - EzEV * EzEV;);
 If(EzEV EQ -INF, varzEV = UNDF;);
 szEV=sqrt(varzEV);
-put "EEV=", EzEV,"<br>" /;
-put "varzEV=", varzEV,"<br>" /;
-put "stdzEV=", szEV,"<br>"/;
+
+put "<table>";
+put "<tr>";
+put "<th>EEV</th>";
+put "<th>varzEV</th>";
+put "<th>stdzEV</th>";
+put "</tr>";
+put "<tr>";
+put "<td>"EzEV"</td>";
+put "<td>"varzEV"</td>";
+put "<td>"szEV"</td>";
+put "</tr>";
+put "</table>";

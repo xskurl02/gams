@@ -30,11 +30,11 @@ put out;
 put "<head>";
 put '<link rel="stylesheet" href="styles.css">';
 put "</head>";
+
 put "Vysledky a vstupy:<br>";
-put "";
 put "==================<br>";
-put "<table>"
-put "<tr>"
+put "<table>";
+put "<tr>";
 put "<th>opt?</th>",
     "<th>num?</th>",
     "<th>z_max</th>";
@@ -43,28 +43,28 @@ loop(i,put "<th>b_UP(",i.tl:0,")</th>";);
 loop(i,put "<th>b_DN(",i.tl:0,")</th>";);
 loop(j,put "<th>x_UP(",j.tl:0,")</th>";);
 put "</tr>";
-
-put "<tr>"
-put "<td>"vyroba.modelstat:2:0"</td>",
-    "<td>"vyroba.solvestat:2:0"</td>",
+put "<tr>";
+put "<td>"vyroba.modelstat"</td>",
+    "<td>"vyroba.solvestat"</td>",
     "<td>"z.L"</td>";
 loop(j,put "<td>"x.L(j)"</td>";);
 loop(i,put "<td>"b_UP(i)"</td>";);
 loop(i,put "<td>"b_DOWN(i)"</td>";);
 loop(j,put "<td>"x_UP(j)"</td>";);
 put "</tr>";
-put "</table>"
-put "<br>"
+put "</table>";
+put "<br>";
 
-put "<table>"
-put "<tr>"
+put "<table>";
+put "<tr>";
 loop(j,put "<th>x_DN(",j.tl:0,")</th>";);
 loop(j,put "<th>c(",j.tl:0,")</th>";);
 loop(i,loop(j,put "<th>a(",i.tl:0,",",j.tl:0,")</th>";););
-put "</tr>"
-put "<tr>"
+put "</tr>";
+
+put "<tr>";
 loop(j,put "<td>"x_DOWN(j)"</td>";);
 loop(j,put "<td>"c(j)"</td>";);
 loop(i,loop(j,put "<td>"a(i,j)"</td>";););
-put "</tr>"
-put "</table>"
+put "</tr>";
+put "</table>";

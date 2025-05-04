@@ -17,17 +17,20 @@ table a(i,j)
 Variable z;
 Positive Variables x(j),yp(i),ym(i);
 Equations ucelfce, omez0(i), omez1(i), omez2(j), omez3(j);
-ucelfce..           z =E= sum(j, c(j) * x(j)) - sum(i, qm(i)* ym(i) );
-omez0(i)..          sum(j,a(i,j) * x(j)) + yp(i) - ym(i) =E= b_UP(i);
-omez1(i)..          sum(j,a(i,j) * x(j)) =G= b_DOWN(i);
-omez2(j)..          x(j) =L= x_UP(j);
-omez3(j)..          x(j) =G= x_DOWN(j);
+ucelfce..   z =E= sum(j, c(j) * x(j)) - sum(i, qm(i)* ym(i));
+omez0(i)..  sum(j,a(i,j) * x(j)) + yp(i) - ym(i) =E= b_UP(i);
+omez1(i)..  sum(j,a(i,j) * x(j)) =G= b_DOWN(i);
+omez2(j)..  x(j) =L= x_UP(j);
+omez3(j)..  x(j) =G= x_DOWN(j);
+
 model vyroba / ucelfce, omez0, omez1, omez2, omez3 /;
 yp.UP(i) = 100;
 ym.UP(i) = 100;
+
 solve vyroba maximizing z using LP;
 display z.L, x.L;
-file out / "vysledky.html" /;
+
+file out / "vysledkyDeterTS.html" /;
 put out;
 put "<head>";
 put '<link rel="stylesheet" href="styles.css">';
@@ -40,14 +43,13 @@ put "<tr>";
 put '<th>opt?</th>',
     '<th>num?</th>',
     '<th>z_max</th>';
-loop(j, put "<th>x(",j.TL:1,")</th>";);
-loop(i, put "<th>yp(",i.TL:1,")</th>";);
-loop(i, put "<th>ym(",i.TL:1,")</th>";);
-loop(j,put "<th>x_UP(",j.tl:0,")</th>";);
-loop(j,put "<th>x_DN(",j.tl:0,")</th>";);
-loop(j, put "<th>c(",j.TL:1,")</th>";);
-
+loop(j,put "<th>x(",j.tl:0,")</th>";);
+loop(i,put "<th>yp(",i.tl:0,")</th>";);
+loop(i,put "<th>ym(",i.tl:0,")</th>";);
+loop(i,put "<th>b_UP(",i.tl:0,")</th>";);
+loop(i,put "<th>b_DN(",i.tl:0,")</th>";);
 put "</tr>";
+
 put "<tr>";
 put "<td>"vyroba.modelstat"</td>",
     "<td>"vyroba.solvestat"</td>",
@@ -55,20 +57,24 @@ put "<td>"vyroba.modelstat"</td>",
 loop(j,put "<td>"x.L(j)"</td>";);
 loop(i,put "<td>"yp.l(i)"</td>";);
 loop(i,put "<td>"ym.l(i)"</td>";);
-loop(j,put "<td>"x_UP(j)"</td>";);
-loop(j,put "<td>"x_DOWN(j)"</td>";);
-loop(j,put "<td>"c(j)"</td>";);
+loop(i,put "<td>"b_UP(i)"</td>";);
+loop(i,put "<td>"b_DOWN(i)"</td>";);
 put "</tr>";
 put "</table>";
+put "<br>"
 
 put "<table>";
 put "<tr>";
-loop(i, put "<th>b_up(",i.TL:1,")</th>";);
-loop(i, put "<th>b_down(",i.TL:1,")</th>";);
-loop(i,loop(j, put "<th>a(",i.TL:1,",",j.TL:1,")</th>";););
+loop(j,put "<th>x_UP(",j.tl:0,")</th>";);
+loop(j,put "<th>x_DN(",j.tl:0,")</th>";);
+loop(j,put "<th>c(",j.TL:1,")</th>";);
+loop(i,loop(j, put "<th>a(",i.tl:0,",",j.tl:0,")</th>";););
 put "</tr>";
+
 put "<tr>";
-loop(i,put "<th>"b_up(i)"</td>";);
-loop(i,put "<th>"b_down(i)"</td>";);
-loop(i,loop(j,put "<th>"a(i,j)"</td>";););
+loop(j,put "<td>"x_UP(j)"</td>";);
+loop(j,put "<td>"x_DOWN(j)"</td>";);
+loop(j,put "<td>"c(j)"</td>";);
+loop(i,loop(j,put "<td>"a(i,j)"</td>";););
 put "</tr>";
+put "</table>";
