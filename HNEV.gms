@@ -53,7 +53,7 @@ put "</head>";
 * ---------- column headings ----------
 put "Vysledky a vstupy:<br>" /;
 put "==================<br>" /;
-put '<table id="EV1/2">';
+put '<table id="EV1-2">';
 put "<tr>";
 put "<th>s</th>",
     "<th>p(s)</th>",
@@ -83,11 +83,11 @@ loop(i,put "<td>"b_UP(i)"</td>";);
 loop(i,put "<td>"b_DOWN(i)"</td>";);
 loop(j,put "<td>"x_UP(j)"</td>";);
 put "</tr>";
-put '</table id="EV1/2">';
+put '</table id="EV1-2">';
 put "<br>"
 * ------------ column headings -------------
 
-put '<table id="EV2/2">';
+put '<table id="EV2-2">';
 put "<tr>";
 loop(j,put "<th>x_DN(",j.tl:0,")</th>";);
 loop(j,put "<th>c(",j.tl:0,")</th>";);
@@ -100,7 +100,7 @@ loop(j,put "<td>"x_DOWN(j)"</td>";);
 loop(j,put "<td>"c(j)"</td>";);
 loop(i,loop(j,put "<td>"a(i,j)"</td>";););
 put "</tr>";
-put '</table id="EV2/2">';
+put '</table id="EV2-2">';
 
 #To Find the current value of X and cap the fucker
 x.Lo(j) = x.L(j);
