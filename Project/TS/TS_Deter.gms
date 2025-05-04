@@ -27,51 +27,37 @@ yp.UP(i) = 100;
 ym.UP(i) = 100;
 solve vyroba maximizing z using LP;
 display z.L, x.L;
-file out / "vysledky.txt" /;
+file out / "vysledky.html" /;
 put out;
-put "Vysledky a vstupy:" /;
-put "==================" / /;
-put 'opt?':7,'num?':7,'z_max':12;
-loop(j, put "x(", j.TL:1, ")":10;);
-loop(i, put "yp(", i.TL:1, ")":10;);
-loop(i, put "ym(", i.TL:1, ")":10;);
-loop(j, put "c(", j.TL:1, ")":10;);
-loop(i, put "b_up(", i.TL:1, ")":10;);
-loop(i, put "b_down(", i.TL:1, ")":10;);
-loop(i,loop(j, put " a(",i.TL:1,",",j.TL:1, ")":10;););
-put /;
-put vyroba.modelstat:2:0,vyroba.solvestat:7:0,z.l:12:2;
+put "<head>";
+put '<link rel="stylesheet" href="styles.css">';
+put "</head>";
 
-loop(j,
-    put x.L(j):10:2;
-    put "":1;
-    put$(ord(j)=1) "":2;
-    put$(ord(j)=2) "":2;
-);
-loop(i,
-    put yp.l(i):11:2;
-    put "":1;
-    put$(ord(i)=1) "":2;
-    put$(ord(i)=2) "":2;
-    put$(ord(i)=3) "":2;
-);
-loop(i, put ym.l(i):14:2;);
-loop(j, put c(j):13:2;);
-loop(i,
-    put b_up(i):13:0;
-    put$(ord(i)=1) "":3;
-    put$(ord(i)=2) "":3;
-    put$(ord(i)=3) "":3;
-);
-loop(i,
-    put b_down(i):16:0 ;
-    put$(ord(i)=1) "":2;
-    put$(ord(i)=2) "":2;
-    put$(ord(i)=3) "":1;
-);
-loop(i,
-     loop(j,
-        put$(ord(i)=1) "":1;
-        put a(i,j):16:0;
-        );   
-);
+put "Vysledky a vstupy:<br>" /;
+put "==================<br>" /;
+put "<table>";
+put "<tr>";
+put '<th>opt?</th>',
+    '<th>num?</th>',
+    '<th>z_max</th>';
+loop(j, put "<th>x(",j.TL:1,")</th>";);
+loop(i, put "<th>yp(",i.TL:1,")</th>";);
+loop(i, put "<th>ym(",i.TL:1,")</th>";);
+loop(j, put "<th>c(",j.TL:1,")</th>";);
+loop(i, put "<th>b_up(",i.TL:1,")</th>";);
+loop(i, put "<th>b_down(",i.TL:1,")</th>";);
+loop(i,loop(j, put "<th>a(",i.TL:1,",",j.TL:1,")</th>";););
+put "</tr>";
+put "<tr>";
+put "<th>"vyroba.modelstat"</td>",
+    "<th>"vyroba.solvestat"</td>",
+    "<th>"z.l"</td>";
+loop(j,put "<th>"x.L(j)"</td>";);
+loop(i,put "<th>"yp.l(i)"</td>";);
+loop(i,put "<th>"ym.l(i)"</td>";);
+loop(j,put "<th>"c(j)"</td>";);
+loop(i,put "<th>"b_up(i)"</td>";);
+loop(i,put "<th>"b_down(i)"</td>";);
+loop(i,loop(j,put "<th>"a(i,j)"</td>";););
+put "</tr>";
+put "</table>";
