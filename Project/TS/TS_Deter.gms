@@ -43,21 +43,32 @@ put '<th>opt?</th>',
 loop(j, put "<th>x(",j.TL:1,")</th>";);
 loop(i, put "<th>yp(",i.TL:1,")</th>";);
 loop(i, put "<th>ym(",i.TL:1,")</th>";);
+loop(j,put "<th>x_UP(",j.tl:0,")</th>";);
+loop(j,put "<th>x_DN(",j.tl:0,")</th>";);
 loop(j, put "<th>c(",j.TL:1,")</th>";);
+
+put "</tr>";
+put "<tr>";
+put "<td>"vyroba.modelstat"</td>",
+    "<td>"vyroba.solvestat"</td>",
+    "<td>"z.l"</td>";
+loop(j,put "<td>"x.L(j)"</td>";);
+loop(i,put "<td>"yp.l(i)"</td>";);
+loop(i,put "<td>"ym.l(i)"</td>";);
+loop(j,put "<td>"x_UP(j)"</td>";);
+loop(j,put "<td>"x_DOWN(j)"</td>";);
+loop(j,put "<td>"c(j)"</td>";);
+
+put "</tr>";
+put "</table>";
+put "<table>";
+put "<tr>";
 loop(i, put "<th>b_up(",i.TL:1,")</th>";);
 loop(i, put "<th>b_down(",i.TL:1,")</th>";);
 loop(i,loop(j, put "<th>a(",i.TL:1,",",j.TL:1,")</th>";););
 put "</tr>";
 put "<tr>";
-put "<th>"vyroba.modelstat"</td>",
-    "<th>"vyroba.solvestat"</td>",
-    "<th>"z.l"</td>";
-loop(j,put "<th>"x.L(j)"</td>";);
-loop(i,put "<th>"yp.l(i)"</td>";);
-loop(i,put "<th>"ym.l(i)"</td>";);
-loop(j,put "<th>"c(j)"</td>";);
 loop(i,put "<th>"b_up(i)"</td>";);
 loop(i,put "<th>"b_down(i)"</td>";);
 loop(i,loop(j,put "<th>"a(i,j)"</td>";););
 put "</tr>";
-put "</table>";
