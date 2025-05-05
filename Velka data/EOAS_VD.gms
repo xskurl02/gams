@@ -1,29 +1,18 @@
 $eolCom #
 $onundf
 set i /1 * 4/; #stlpce x
-set j /1 * 3/; #riadky y
+set j /1 * 4/; #riadky y
 set s /1 * 3/; #scenare s
+alias(s,s1);
 scalar EzEOAS, varzEOAS, szEOAS;
 parameter
     b_UP /1 4000,2 3000,3 4500,4 3000/, #Horna hranica suctu v riadku
-    b_DOWN /1 1000,2 1500,3 4000,4 800/, #Dolna hranica suctu v riadku
-    x_UP /1 100,2 100,3 100/, # Horna hranica x
-    x_DOWN /1 20,2 40,3 20/, # Dolna hranica x
+    b_DOWN /1 1000,2 1500,3 2500,4 800/, #Dolna hranica suctu v riadku
+    x_UP /1 100,2 100,3 100,4 100/, # Horna hranica x
+    x_DOWN /1 20,2 40,3 20,4 20/, # Dolna hranica x
     p(s) /1 0.35,2 0.35,3 0.3/,
-    c(j) /1 145, 2 150, 3 147/,
-    as(i,j,s)
-    /1.1.1 30, 1.2.1 28, 1.3.1 27, 
-    2.1.1 22, 2.2.1 23, 2.3.1 21,
-    3.1.1 31, 3.2.1 34, 3.3.1 34,
-    4.1.1 24, 4.2.1 20, 4.3.1 24,
-    1.1.2 30, 1.2.2 27, 1.3.2 26,
-    2.1.2 22, 2.2.2 23, 2.3.2 21,
-    3.1.2 31, 3.2.2 35, 3.3.2 34,
-    4.1.2 23, 4.2.2 21, 4.3.2 22,
-    1.1.3 25, 1.2.3 30, 1.3.3 30,
-    2.1.3 25, 2.2.3 20, 2.3.3 22,
-    3.1.3 30, 3.2.3 35, 3.3.3 32,
-    4.1.3 18, 4.2.3 20,4.3.3 22/,
+    c(j) /1 145, 2 150, 3 147, 4 143/,
+    as(i,j,s),
     zEOASmax(s),
     xEOASmax(j,s);
 table a(i,j)
@@ -32,6 +21,14 @@ table a(i,j)
 2   22  23  21
 3   31  34  34
 4   26  20  24;
+
+*-------------------------
+*Large Data Creation
+*-------------------------
+as(i,j,s) = uniform(15,30);
+p(s) = uniform(0,1);
+p(s) = p(s)/sum(s1,p(s1));
+
 Variable z;
 Positive Variables x(j);
 *-------------------------------- 
@@ -47,12 +44,15 @@ omez2(i)..             sum(j,    a(i,j) * x(j) ) =G= b_DOWN(i);
 omez1AS(i,s)..         sum(j, as(i,j,s) * x(j) ) =L= b_UP(i);
 omez2AS(i,s)..         sum(j, as(i,j,s) * x(j) ) =G= b_DOWN(i);
 
-model vyroba / ucelfceEO, omez1AS, omez2AS /;
-model verifikace / ucelfce, omez1,omez2 /;
+*model vyroba / ucelfceEO, omez1AS, omez2AS /;
+*model verifikace / ucelfce, omez1,omez2 /;
+
+model vyroba / ucelfceEO, omez1AS/;
+model verifikace / ucelfce, omez1/;
 *---------------------------------------------------------------------------
 *  >>> neatly formatted output file  <<<
 *---------------------------------------------------------------------------
-file out / "vysledky_EOAS.html" /;
+file out / "vysledky_EOAS_VD.html" /;
 put out;
 put "<head>";
 put '<link rel="stylesheet" href="styles.css">';

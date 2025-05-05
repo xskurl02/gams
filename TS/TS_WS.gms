@@ -52,7 +52,7 @@ model vyroba / ucelfce, omez0, omez1, omez2, omez3 /;
 yp.UP(i) = 100;
 ym.UP(i) = 100;
 
-file out / "vysledkyWSTS.html" /;
+file out / "vysledkyWS_TS.html" /;
 put out;
 put "<head>";
 put '<link rel="stylesheet" href="styles.css">';

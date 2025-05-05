@@ -6,7 +6,7 @@ parameter
     b_DOWN /1 1000,2 1500,3 4000,4 800/, #Dolna hranica suctu v riadku
     x_UP /1 100,2 100,3 100/, # Horna hranica x
     x_DOWN /1 20,2 40,3 20/, # Dolna hranica x
-    qm(i) / 1 10, 2 20, 3 30/, #Naklady na zdroje navic -> TODO: Opytat sa teamu
+    qm(i) / 1 10, 2 20, 3 30, 4 40/, #Naklady na zdroje navic -> TODO: Opytat sa teamu
     c(j) /1 145, 2 150, 3 147/;
 table a(i,j)
     1   2   3
@@ -30,7 +30,7 @@ ym.UP(i) = 100;
 solve vyroba maximizing z using LP;
 display z.L, x.L;
 
-file out / "vysledkyDeterTS.html" /;
+file out / "vysledkyDeter_TS.html" /;
 put out;
 put "<head>";
 put '<link rel="stylesheet" href="styles.css">';
@@ -61,7 +61,7 @@ loop(i,put "<td>"b_UP(i)"</td>";);
 loop(i,put "<td>"b_DOWN(i)"</td>";);
 put "</tr>";
 put "</table>";
-put "<br>"
+put "<br>";
 
 put "<table>";
 put "<tr>";
@@ -76,5 +76,15 @@ loop(j,put "<td>"x_UP(j)"</td>";);
 loop(j,put "<td>"x_DOWN(j)"</td>";);
 loop(j,put "<td>"c(j)"</td>";);
 loop(i,loop(j,put "<td>"a(i,j)"</td>";););
+put "</tr>";
+put "</table>";
+
+put "<br>";
+put "<table>";
+put "<tr>";
+loop(i, put "<th>qm(",i.TL:1,")</th>";);
+put "</tr>";
+put "<tr>";
+loop(i,put "<td>"qm(i)"</td>";);
 put "</tr>";
 put "</table>";

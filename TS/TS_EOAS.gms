@@ -46,7 +46,7 @@ x.up(j) = x_UP(j);
 x.lo(j) = x_DOWN(j);
 Equations ucelfce, ucelfceEO,omez1(i) ,omez2(i), omez1AS(i,s),omez2AS(i,s);
 
-ucelfceEO..    z =E= sum(s,p(s)*sum(i,qms(i,s)*yms(i,s) + qps(i,s)*yps(i,s)));          
+ucelfceEO..    z =E= sum(j,c(j)*x(j)) - sum(s,p(s)*sum(i,qms(i,s)*yms(i,s) + qps(i,s)*yps(i,s)));          
 ucelfce..      z =E= sum(j,c(j)*x(j)) - sum(i,qm(i)*ym(i)+qp(i)*yp(i));
                           
 omez1(i)..          sum(j, a(i,j) * x(j)) + yp(i) - ym(i) =E= b_UP(i);
@@ -57,9 +57,9 @@ omez2AS(i,s)..      sum(j, as(i,j,s) * x(j)) =G= b_DOWN(i);
 model vyroba / ucelfceEO, omez1AS, omez2AS /;
 model verifikace / ucelfce, omez1,omez2 /;
 yp.UP(i) = 1000;
-ym.UP(i) = 0;
+ym.UP(i) = 1000;
 yps.UP(i,s) = 1000;
-yms.UP(i,s) = 0;
+yms.UP(i,s) = 1000;
 
 file out / "vysledkyEOAS_TS.html" /;
 put out;

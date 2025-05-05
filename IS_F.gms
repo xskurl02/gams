@@ -48,7 +48,7 @@ display z.L, x.L;
 x.Lo(j) = x.L(j);
 x.Up(j) = x.L(j);
 
-file out / "vysledkyIS.html" /;
+file out / "vysledky_IS.html" /;
 put out;
 put "<head>";
 put '<link rel="stylesheet" href="styles.css">';

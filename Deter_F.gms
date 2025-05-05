@@ -25,7 +25,7 @@ model vyroba /ucelfce, omez0, omez1, omez2, omez3/;
 solve vyroba maximizing z using LP;
 display z.L, x.L;
 
-file out / "vysledkyDeter.html" /;
+file out / "vysledky_Deter.html" /;
 put out;
 put "<head>";
 put '<link rel="stylesheet" href="styles.css">';
